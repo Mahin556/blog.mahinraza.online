@@ -1,7 +1,7 @@
 ---
 title: "Virtualization, Virtual Machines, and Hypervisors: A Practical Guide for Cloud & DevOps Engineers"
 description: "Learn how hardware virtualization abstracts physical servers into isolated virtual machines, the architectural differences between Type 1 (Bare-Metal) and Type 2 (Hosted) hypervisors, VMs vs. containers, and how cloud providers run compute at scale."
-date: 2026-11-17
+date: 2026-11-16
 category: "Platform & Systems Engineering"
 tags:
   - Virtualization
