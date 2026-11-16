@@ -11,7 +11,7 @@ tags:
   - Linux
   - Cloud
   - DevOps
-draft: false
+draft: true
 ---
 
 What is Vagrant:
