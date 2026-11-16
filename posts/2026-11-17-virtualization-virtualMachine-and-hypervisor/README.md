@@ -11,9 +11,6 @@ tags:
   - Cloud
   - DevOps
 draft: false
-devto: false
-devto_update: false
-hashnode: false
 ---
 
 Before virtualization became the standard in data centers, deploying a new application meant provisioning a dedicated physical server for a single operating system and workload. If a database only used 15% of a server's CPU and memory, the remaining 85% sat idle—because running multiple applications on the same operating system risked dependency conflicts, resource contention, and security blast-radius issues.
