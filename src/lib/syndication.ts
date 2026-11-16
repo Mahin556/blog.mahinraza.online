@@ -59,5 +59,10 @@ export function prepareSyndicatedMarkdown(
     return body;
   }
 
-  return `${body}\n\n---\n\n*Originally published at [blog.mahinraza.online](${canonicalUrl}).*`;
+  const updatedSuffix =
+    post.isUpdated && post.formattedUpdatedDate
+      ? ` (Last updated: ${post.formattedUpdatedDate})`
+      : '';
+
+  return `${body}\n\n---\n\n*Originally published at [blog.mahinraza.online](${canonicalUrl})${updatedSuffix}.*`;
 }

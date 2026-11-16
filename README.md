@@ -161,14 +161,17 @@ git push
 | `title` | **Yes** (or `# Heading`) | Inferred from slug | Post title displayed on the article, cards, RSS, and OpenGraph tags. |
 | `description` | Optional | Auto-extracted from 1st paragraph | 1–2 sentence summary used for SEO meta description and post cards. |
 | `date` | Optional | `YYYY-MM-DD` from filename | Publication date (`YYYY-MM-DD`). |
+| `updated` | Optional | Auto-detected from Git modification commits | Last updated date (`YYYY-MM-DD`). Set `updated: false` to hide even when modified in Git. |
 | `tags` | Optional | `["DevOps"]` | YAML list (`[AWS, EKS]`) or comma-separated string (`AWS, EKS`). |
 | `category` | Optional | Auto-inferred from `tags` | Explicit category track name (see [Section 6](#6-categories--automatic-tag-routing)). |
 | `author` | Optional | `Mahin556` (`Mahin Raza`) | GitHub username or `[handle](url)` mapped via [`Authors.json`](./Authors.json). |
 | `draft` | Optional | `false` | Set `draft: true` to hide a work-in-progress post from all builds and feeds. |
 | `image` | Optional | `./social-media.png` or `/og-default.png` | Custom OpenGraph cover image path or URL (`1280x720` recommended). |
 | `devto` | Optional | `false` | `true` = publish live on `dev.to`, `draft` = save as draft on `dev.to`, `false` = skip. |
+| `devto_update` | Optional | Matches `devto` | `true` = also update on `dev.to` when edited; `false` = update blog only without overwriting `dev.to`. |
 | `devto_series` | Optional | None | Optional series title on `dev.to` (e.g. `"Kubernetes Production Series"`). |
 | `hashnode` | Optional | `false` | `true` = publish live on Hashnode, `draft` = save as draft on Hashnode, `false` = skip. |
+| `comments` | Optional | `true` | Set `comments: false` to disable the Giscus comment section on a specific post. |
 
 ---
 
@@ -253,6 +256,19 @@ Cross-posting is **100% opt-in**. By default, articles stay exclusively on `blog
 2. **Fixes Images & Links:** Attaches your OpenGraph cover image and rewrites relative Markdown image/link paths (`./diagram.png`, `/posts/...`) to full `https://blog.mahinraza.online/...` URLs (without touching code blocks).
 3. **Prevents Duplicates:** Matches existing remote articles by canonical URL / title — skips unchanged articles and updates edited articles in place.
 
+### Updating an Existing Article (Blog Only vs. Also Update on DEV)
+
+Whenever you edit an existing post:
+- **Interactive CLI (`npm run update-post`):** Stamps `updated: YYYY-MM-DD` in your post and asks whether to also update the article on `dev.to`:
+  ```bash
+  npm run update-post
+  # Or non-interactively:
+  npm run update-post -- posts/2026-11-15-eks-pod-autoscaling --devto      # Update blog + dev.to
+  npm run update-post -- posts/2026-11-15-eks-pod-autoscaling --no-devto   # Update blog ONLY
+  ```
+- **Frontmatter Control:** Set `devto_update: true` (or `devio_update: true`) to sync updates to `dev.to`, or `devto_update: false` to keep your `dev.to` article unchanged when pushing blog edits.
+- **GitHub Actions UI:** When manually running **Publish Opted-In Posts to DEV**, you can toggle `update_existing` or `force_update`.
+
 ### One-Time GitHub Secrets Setup
 
 Open your GitHub repository → **Settings → Secrets and variables → Actions → New repository secret**:
@@ -273,6 +289,7 @@ Open your GitHub repository → **Settings → Secrets and variables → Actions
 - **Site Title, Domain, Bio, Portfolio & GitHub URLs:** Edit [`src/lib/site.ts`](./src/lib/site.ts) (`SITE_CONFIG`).
 - **Author Profiles:** Edit [`Authors.json`](./Authors.json).
 - **Light / Dark Theme:** Defaults to **Light Mode** (`#f8fafc` / `#ffffff`) with a persistent Sun/Moon toggle in [`src/components/Header.astro`](./src/components/Header.astro) (`localStorage` key `'theme-preference'`) and zero-FOUC initialization in [`src/layouts/BaseLayout.astro`](./src/layouts/BaseLayout.astro).
+- **Blog Comments (Giscus / GitHub Discussions):** Configured in [`src/lib/site.ts`](./src/lib/site.ts) (`SITE_CONFIG.comments`) and [`src/components/Comments.astro`](./src/components/Comments.astro). Enable **Discussions** on `Mahin556/blog.mahinraza.online`, install the [giscus GitHub App](https://github.com/apps/giscus), grab your IDs from [giscus.app](https://giscus.app), and set `PUBLIC_GISCUS_REPO_ID` + `PUBLIC_GISCUS_CATEGORY_ID` in `.env` / Cloudflare Pages environment variables (or directly in `src/lib/site.ts`).
 - **Theme Colors & Card/Tag Accents:** Edit [`src/lib/colors.ts`](./src/lib/colors.ts) and [`src/styles/global.css`](./src/styles/global.css).
 - **Favicon:** Edit [`public/favicon.svg`](./public/favicon.svg).
 
@@ -332,6 +349,9 @@ npm run preview
 
 # Generate OpenGraph social-media.png cards for folder posts
 npm run generate-social-image
+
+# Stamp "Last updated" date on a post & choose whether to sync edits to DEV (dev.to)
+npm run update-post
 
 # Preview or publish opted-in posts to DEV (dev.to)
 npm run publish:devto:dry

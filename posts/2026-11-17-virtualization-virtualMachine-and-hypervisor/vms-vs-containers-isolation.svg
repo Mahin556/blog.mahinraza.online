@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="540" viewBox="0 0 1080 540" role="img" aria-labelledby="title-vmc desc-vmc">
+  <title id="title-vmc">Virtual Machines vs. Containers Isolation Boundary</title>
+  <desc id="desc-vmc">Comparison between hardware-level virtualization using a hypervisor and separate guest kernels per VM versus OS-level containerization sharing a single host Linux kernel.</desc>
+
+  <defs>
+    <style>
+      .font-sans { font-family: Inter, 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    </style>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect x="0" y="0" width="1080" height="540" rx="16" fill="#f8fafc" />
+  <rect x="1" y="1" width="1078" height="538" rx="15" fill="none" stroke="#e2e8f0" stroke-width="2" />
+
+  <!-- Header -->
+  <text x="40" y="44" class="font-mono" font-size="12" font-weight="600" fill="#0f766e" letter-spacing="0.08em">// ISOLATION BOUNDARIES</text>
+  <text x="40" y="72" class="font-sans" font-size="22" font-weight="700" fill="#0f172a">Hardware Virtualization (VMs) vs. OS Virtualization (Containers)</text>
+
+  <!-- ========================================================= -->
+  <!-- LEFT: Virtual Machines (Hardware-Level Isolation)          -->
+  <!-- ========================================================= -->
+  <rect x="40" y="98" width="484" height="404" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="64" y="130" class="font-sans" font-size="16" font-weight="700" fill="#0f172a">Virtual Machines (Hardware Virtualization)</text>
+  <text x="64" y="150" class="font-mono" font-size="11" fill="#0f766e">Isolation boundary: Hardware (VT-x / EPT + Separate Kernel)</text>
+
+  <!-- VM A -->
+  <rect x="64" y="170" width="210" height="148" rx="8" fill="#f8fafc" stroke="#0d9488" stroke-width="1.75" />
+  <text x="169" y="192" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#0f766e">Virtual Machine A</text>
+  <rect x="80" y="204" width="178" height="28" rx="4" fill="#e0f2fe" />
+  <text x="169" y="222" text-anchor="middle" class="font-sans" font-size="11.5" font-weight="600" fill="#0369a1">App A + Binaries/Libs</text>
+  <rect x="80" y="240" width="178" height="32" rx="4" fill="#ccfbf1" stroke="#14b8a6" />
+  <text x="169" y="260" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#115e59">Dedicated Guest Kernel</text>
+  <text x="169" y="298" text-anchor="middle" class="font-mono" font-size="10.5" fill="#64748b">Boot: Seconds · Size: GBs</text>
+
+  <!-- VM B -->
+  <rect x="290" y="170" width="210" height="148" rx="8" fill="#f8fafc" stroke="#0d9488" stroke-width="1.75" />
+  <text x="395" y="192" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#0f766e">Virtual Machine B</text>
+  <rect x="306" y="204" width="178" height="28" rx="4" fill="#e0f2fe" />
+  <text x="395" y="222" text-anchor="middle" class="font-sans" font-size="11.5" font-weight="600" fill="#0369a1">App B + Binaries/Libs</text>
+  <rect x="306" y="240" width="178" height="32" rx="4" fill="#ccfbf1" stroke="#14b8a6" />
+  <text x="395" y="260" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#115e59">Dedicated Guest Kernel</text>
+  <text x="395" y="298" text-anchor="middle" class="font-mono" font-size="10.5" fill="#64748b">Can run Linux or Windows</text>
+
+  <!-- Hypervisor -->
+  <rect x="64" y="334" width="436" height="62" rx="8" fill="#0f766e" />
+  <text x="282" y="361" text-anchor="middle" class="font-sans" font-size="14" font-weight="700" fill="#ffffff">Hypervisor (KVM / ESXi / Hyper-V / Nitro)</text>
+  <text x="282" y="381" text-anchor="middle" class="font-mono" font-size="10.5" fill="#ccfbf1">Emulates virtual CPU, RAM, disk &amp; NIC per VM</text>
+
+  <!-- Physical Server -->
+  <rect x="64" y="410" width="436" height="68" rx="8" fill="#0f172a" />
+  <text x="282" y="438" text-anchor="middle" class="font-sans" font-size="14" font-weight="700" fill="#f8fafc">Physical Host Hardware</text>
+  <text x="282" y="458" text-anchor="middle" class="font-mono" font-size="11" fill="#94a3b8">CPU · Memory · Storage · Network</text>
+
+  <!-- ========================================================= -->
+  <!-- RIGHT: Containers (OS-Level Isolation)                    -->
+  <!-- ========================================================= -->
+  <rect x="556" y="98" width="484" height="404" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <text x="580" y="130" class="font-sans" font-size="16" font-weight="700" fill="#0f172a">Containers (OS-Level Virtualization)</text>
+  <text x="580" y="150" class="font-mono" font-size="11" fill="#0369a1">Isolation boundary: Linux Namespaces, cgroups &amp; seccomp</text>
+
+  <!-- Containers 1, 2, 3 -->
+  <g>
+    <rect x="580" y="170" width="136" height="106" rx="8" fill="#f8fafc" stroke="#0284c7" stroke-width="1.75" />
+    <text x="648" y="192" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#0369a1">Container 1</text>
+    <rect x="592" y="204" width="112" height="32" rx="4" fill="#e0f2fe" />
+    <text x="648" y="224" text-anchor="middle" class="font-sans" font-size="11" font-weight="600" fill="#0369a1">App 1 + Libs</text>
+    <text x="648" y="258" text-anchor="middle" class="font-mono" font-size="10" fill="#64748b">Boot: ms · MBs</text>
+
+    <rect x="730" y="170" width="136" height="106" rx="8" fill="#f8fafc" stroke="#0284c7" stroke-width="1.75" />
+    <text x="798" y="192" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#0369a1">Container 2</text>
+    <rect x="742" y="204" width="112" height="32" rx="4" fill="#e0f2fe" />
+    <text x="798" y="224" text-anchor="middle" class="font-sans" font-size="11" font-weight="600" fill="#0369a1">App 2 + Libs</text>
+    <text x="798" y="258" text-anchor="middle" class="font-mono" font-size="10" fill="#64748b">Boot: ms · MBs</text>
+
+    <rect x="880" y="170" width="136" height="106" rx="8" fill="#f8fafc" stroke="#0284c7" stroke-width="1.75" />
+    <text x="948" y="192" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#0369a1">Container 3</text>
+    <rect x="892" y="204" width="112" height="32" rx="4" fill="#e0f2fe" />
+    <text x="948" y="224" text-anchor="middle" class="font-sans" font-size="11" font-weight="600" fill="#0369a1">App 3 + Libs</text>
+    <text x="948" y="258" text-anchor="middle" class="font-mono" font-size="10" fill="#64748b">Boot: ms · MBs</text>
+  </g>
+
+  <!-- Container Runtime -->
+  <rect x="580" y="290" width="436" height="44" rx="8" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1.5" />
+  <text x="798" y="317" text-anchor="middle" class="font-sans" font-size="13.5" font-weight="700" fill="#0369a1">Container Runtime (containerd / CRI-O / Docker)</text>
+
+  <!-- Shared Host OS Kernel -->
+  <rect x="580" y="346" width="436" height="50" rx="8" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5" />
+  <text x="798" y="370" text-anchor="middle" class="font-sans" font-size="14" font-weight="700" fill="#0f172a">Shared Host OS Kernel (e.g., Linux Kernel)</text>
+  <text x="798" y="387" text-anchor="middle" class="font-mono" font-size="10.5" fill="#475569">All containers make syscalls to the same kernel</text>
+
+  <!-- Underlying VM or Physical Host -->
+  <rect x="580" y="410" width="436" height="68" rx="8" fill="#0f172a" />
+  <text x="798" y="438" text-anchor="middle" class="font-sans" font-size="14" font-weight="700" fill="#f8fafc">Cloud VM (EC2 / GCE) or Bare-Metal Server</text>
+  <text x="798" y="458" text-anchor="middle" class="font-mono" font-size="11" fill="#5eead4">In production cloud, containers typically run inside VMs</text>
+</svg>

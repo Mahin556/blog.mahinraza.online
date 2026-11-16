@@ -219,6 +219,11 @@
               '</span>' +
               '<span class="font-mono text-[11px] text-slate-400 dark:text-slate-500">' +
               escapeHtml(item.formattedDate) +
+              (item.formattedUpdatedDate
+                ? ' &middot; <span class="text-teal-700 dark:text-teal-400">Updated ' +
+                  escapeHtml(item.formattedUpdatedDate) +
+                  '</span>'
+                : '') +
               ' &middot; ' +
               escapeHtml(item.readingTimeText) +
               '</span>' +

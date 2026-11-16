@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import matter from 'gray-matter';
@@ -19,6 +20,12 @@ export interface BlogPost {
   date: Date;
   dateISO: string;
   formattedDate: string;
+  /** Optional last-modified date from frontmatter (`updated`) or Git modification history */
+  updatedDate?: Date;
+  updatedDateISO?: string;
+  formattedUpdatedDate?: string;
+  /** True when the post has an explicit `updated` date or a later Git modification commit */
+  isUpdated: boolean;
   tags: string[];
   category: string;
   categorySlug: string;
@@ -32,6 +39,8 @@ export interface BlogPost {
   isDirectoryPost: boolean;
   /** Whether this post is opted in for cross-posting to DEV Community (dev.to) */
   devto: boolean;
+  /** Whether edits to this post should also update an existing DEV Community article */
+  devtoUpdate: boolean;
   /** When true, syncs to DEV Community as an unpublished draft instead of live */
   devtoDraft: boolean;
   /** Optional DEV Community series name */
@@ -40,6 +49,8 @@ export interface BlogPost {
   hashnode: boolean;
   /** When true, syncs to Hashnode as an unpublished draft instead of live */
   hashnodeDraft: boolean;
+  /** Whether comments are enabled on this post (defaults to true) */
+  comments: boolean;
 }
 
 export interface TaxonomyItem {
@@ -296,18 +307,28 @@ function formatDateDisplay(date: Date): string {
   });
 }
 
+function parseOptionalDate(rawDate: unknown): Date | null {
+  if (rawDate instanceof Date && !Number.isNaN(rawDate.getTime())) {
+    return rawDate;
+  }
+  if (typeof rawDate === 'string' && rawDate.trim()) {
+    const trimmed = rawDate.trim();
+    const isoCandidate = /^\d{4}-\d{2}-\d{2}$/.test(trimmed)
+      ? `${trimmed}T00:00:00.000Z`
+      : trimmed;
+    const parsed = new Date(isoCandidate);
+    if (!Number.isNaN(parsed.getTime())) return parsed;
+  }
+  return null;
+}
+
 function parseDateFromSlugOrFrontmatter(
   rawDate: unknown,
   slugName: string,
   fallbackFilePath: string
 ): Date {
-  if (rawDate instanceof Date && !Number.isNaN(rawDate.getTime())) {
-    return rawDate;
-  }
-  if (typeof rawDate === 'string' && rawDate.trim()) {
-    const parsed = new Date(rawDate.trim());
-    if (!Number.isNaN(parsed.getTime())) return parsed;
-  }
+  const explicit = parseOptionalDate(rawDate);
+  if (explicit) return explicit;
 
   const dateMatch = slugName.match(/^(\d{4}-\d{2}-\d{2})(?:-|$)/);
   if (dateMatch) {
@@ -317,6 +338,47 @@ function parseDateFromSlugOrFrontmatter(
 
   const stat = fs.statSync(fallbackFilePath);
   return stat.mtime;
+}
+
+/**
+ * Batch-loads the latest Git modification (`M`) commit date for all files under `posts/`
+ * in a single fast `git log` invocation. Initial creation (`A`) commits are ignored so
+ * newly published posts are not marked as "Updated".
+ */
+function loadGitModifiedDates(): Map<string, Date> {
+  const map = new Map<string, Date>();
+  try {
+    const out = execFileSync(
+      'git',
+      ['log', '--diff-filter=M', '--format=__COMMIT__%cI', '--name-only', '--', 'posts'],
+      {
+        cwd: ROOT_DIR,
+        encoding: 'utf-8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }
+    );
+
+    let currentCommitDate: Date | null = null;
+    for (const rawLine of out.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      if (!line) continue;
+      if (line.startsWith('__COMMIT__')) {
+        const iso = line.slice('__COMMIT__'.length).trim();
+        const parsed = new Date(iso);
+        currentCommitDate = Number.isNaN(parsed.getTime()) ? null : parsed;
+        continue;
+      }
+      if (currentCommitDate) {
+        const normPath = line.replace(/\\/g, '/');
+        if (!map.has(normPath)) {
+          map.set(normPath, currentCommitDate);
+        }
+      }
+    }
+  } catch {
+    // Git unavailable or not a repository — rely on explicit frontmatter only
+  }
+  return map;
 }
 
 function extractFirstParagraph(markdownBody: string): string {
@@ -356,7 +418,8 @@ function parsePostFile(
   filePath: string,
   slug: string,
   isDirectoryPost: boolean,
-  authorsMap: AuthorsMap
+  authorsMap: AuthorsMap,
+  gitModifiedMap: Map<string, Date>
 ): BlogPost | null {
   const rawFile = fs.readFileSync(filePath, 'utf-8');
   const parsed = matter(rawFile);
@@ -370,18 +433,25 @@ function parsePostFile(
   let description = typeof fm.description === 'string' ? fm.description.trim() : '';
   let rawAuthor = typeof fm.author === 'string' ? fm.author.trim() : '';
   let rawCategory = typeof fm.category === 'string' ? fm.category.trim() : '';
+  let rawUpdated: unknown =
+    fm.updated ?? fm.updatedDate ?? fm.lastUpdated ?? fm.lastmod ?? fm.modified;
   let rawDevto: unknown = fm.devto ?? fm.devio ?? fm.publish_to_devto;
+  let rawDevtoUpdate: unknown =
+    fm.devto_update ?? fm.devio_update ?? fm.update_devto ?? fm.update_devio;
   let rawDevtoDraft: unknown =
-    fm.devto_draft ?? (fm.devto_published === false ? true : undefined);
+    fm.devto_draft ?? fm.devio_draft ?? (fm.devto_published === false ? true : undefined);
   let devtoSeries =
     typeof fm.devto_series === 'string' && fm.devto_series.trim()
       ? fm.devto_series.trim()
-      : typeof fm.series === 'string' && fm.series.trim()
-        ? fm.series.trim()
-        : undefined;
+      : typeof fm.devio_series === 'string' && fm.devio_series.trim()
+        ? fm.devio_series.trim()
+        : typeof fm.series === 'string' && fm.series.trim()
+          ? fm.series.trim()
+          : undefined;
   let rawHashnode: unknown = fm.hashnode ?? fm.publish_to_hashnode;
   let rawHashnodeDraft: unknown =
     fm.hashnode_draft ?? (fm.hashnode_published === false ? true : undefined);
+  let rawComments: unknown = fm.comments;
   let tags: string[] = Array.isArray(fm.tags)
     ? fm.tags.map((t) => String(t).trim()).filter(Boolean)
     : typeof fm.tags === 'string'
@@ -432,15 +502,35 @@ function parsePostFile(
         }
         continue;
       }
+      if (/^(Updated|Last\s*Updated|Modified):\s*/i.test(trimmed)) {
+        if (rawUpdated === undefined) {
+          rawUpdated = trimmed.replace(/^(Updated|Last\s*Updated|Modified):\s*/i, '').trim();
+        }
+        continue;
+      }
       if (/^(DevTo|DevIo|PublishToDevTo):\s*/i.test(trimmed)) {
         if (rawDevto === undefined) {
           rawDevto = trimmed.replace(/^(DevTo|DevIo|PublishToDevTo):\s*/i, '').trim();
         }
         continue;
       }
+      if (/^(DevToUpdate|DevIoUpdate|UpdateDevTo|UpdateDevIo):\s*/i.test(trimmed)) {
+        if (rawDevtoUpdate === undefined) {
+          rawDevtoUpdate = trimmed
+            .replace(/^(DevToUpdate|DevIoUpdate|UpdateDevTo|UpdateDevIo):\s*/i, '')
+            .trim();
+        }
+        continue;
+      }
       if (/^(Hashnode|PublishToHashnode):\s*/i.test(trimmed)) {
         if (rawHashnode === undefined) {
           rawHashnode = trimmed.replace(/^(Hashnode|PublishToHashnode):\s*/i, '').trim();
+        }
+        continue;
+      }
+      if (/^Comments:\s*/i.test(trimmed)) {
+        if (rawComments === undefined) {
+          rawComments = trimmed.replace(/^Comments:\s*/i, '').trim();
         }
         continue;
       }
@@ -482,7 +572,38 @@ function parsePostFile(
   const category = inferCategory(rawCategory, uniqueTags);
   const categorySlug = slugifyTerm(category);
   const date = parseDateFromSlugOrFrontmatter(fm.date ?? fm.pubDate, slug, filePath);
+  const formattedDate = formatDateDisplay(date);
   const author = resolveAuthor(rawAuthor, authorsMap);
+
+  const relSourcePath = path.relative(ROOT_DIR, filePath).replace(/\\/g, '/');
+
+  // Resolve optional Last Updated date:
+  // 1) Explicit frontmatter/header (`updated: YYYY-MM-DD`, or `updated: false` to suppress)
+  // 2) Fallback to Git modification history (`--diff-filter=M`) when modified on a later day
+  let updatedDate: Date | undefined;
+  let isUpdated = false;
+  const rawUpdatedNorm =
+    typeof rawUpdated === 'string' ? rawUpdated.trim().toLowerCase() : '';
+  const suppressUpdated =
+    rawUpdated === false || ['false', 'no', 'none', '0'].includes(rawUpdatedNorm);
+
+  if (!suppressUpdated) {
+    const explicitUpdated = parseOptionalDate(rawUpdated);
+    if (explicitUpdated) {
+      updatedDate = explicitUpdated;
+      isUpdated = true;
+    } else if (rawUpdated === undefined || rawUpdatedNorm === '') {
+      const gitModDate = gitModifiedMap.get(relSourcePath);
+      if (
+        gitModDate &&
+        gitModDate.getTime() > date.getTime() &&
+        formatDateDisplay(gitModDate) !== formattedDate
+      ) {
+        updatedDate = gitModDate;
+        isUpdated = true;
+      }
+    }
+  }
 
   const wordCount = body
     .replace(/```[\s\S]*?```/g, ' ')
@@ -507,16 +628,35 @@ function parsePostFile(
     }
   }
 
-  const relSourcePath = path.relative(ROOT_DIR, filePath).replace(/\\/g, '/');
-
   const normalizedDevtoStr =
     typeof rawDevto === 'string' ? rawDevto.trim().toLowerCase() : '';
-  const devto =
+  const baseDevto =
     rawDevto === true ||
     normalizedDevtoStr === 'true' ||
     normalizedDevtoStr === 'yes' ||
     normalizedDevtoStr === '1' ||
     normalizedDevtoStr === 'draft';
+
+  const normalizedDevtoUpdateStr =
+    typeof rawDevtoUpdate === 'string' ? rawDevtoUpdate.trim().toLowerCase() : '';
+  const explicitDevtoUpdateTrue =
+    rawDevtoUpdate === true ||
+    normalizedDevtoUpdateStr === 'true' ||
+    normalizedDevtoUpdateStr === 'yes' ||
+    normalizedDevtoUpdateStr === '1';
+  const explicitDevtoUpdateFalse =
+    rawDevtoUpdate === false ||
+    normalizedDevtoUpdateStr === 'false' ||
+    normalizedDevtoUpdateStr === 'no' ||
+    normalizedDevtoUpdateStr === '0';
+
+  const devto = baseDevto || explicitDevtoUpdateTrue;
+  const devtoUpdate = explicitDevtoUpdateFalse
+    ? false
+    : explicitDevtoUpdateTrue
+      ? true
+      : devto;
+
   const devtoDraft =
     rawDevtoDraft === true ||
     (typeof rawDevtoDraft === 'string' &&
@@ -537,13 +677,31 @@ function parsePostFile(
       rawHashnodeDraft.trim().toLowerCase() === 'true') ||
     normalizedHashnodeStr === 'draft';
 
+  const normalizedCommentsStr =
+    typeof rawComments === 'string' ? rawComments.trim().toLowerCase() : '';
+  const comments = !(
+    rawComments === false ||
+    normalizedCommentsStr === 'false' ||
+    normalizedCommentsStr === 'no' ||
+    normalizedCommentsStr === '0' ||
+    normalizedCommentsStr === 'off'
+  );
+
   return {
     slug,
     title,
     description,
     date,
     dateISO: date.toISOString(),
-    formattedDate: formatDateDisplay(date),
+    formattedDate,
+    ...(updatedDate
+      ? {
+          updatedDate,
+          updatedDateISO: updatedDate.toISOString(),
+          formattedUpdatedDate: formatDateDisplay(updatedDate),
+        }
+      : {}),
+    isUpdated,
     tags: uniqueTags,
     category,
     categorySlug,
@@ -556,20 +714,27 @@ function parsePostFile(
     githubEditUrl: `${SITE_CONFIG.repoUrl}/blob/main/${relSourcePath}`,
     isDirectoryPost,
     devto,
+    devtoUpdate,
     devtoDraft,
     ...(devtoSeries ? { devtoSeries } : {}),
     hashnode,
     hashnodeDraft,
+    comments,
   };
 }
 
 let cachedPosts: BlogPost[] | null = null;
+
+export function clearPostsCache(): void {
+  cachedPosts = null;
+}
 
 export function loadAllPosts(): BlogPost[] {
   if (cachedPosts) return cachedPosts;
   if (!fs.existsSync(POSTS_DIR)) return [];
 
   const authorsMap = loadAuthorsMap();
+  const gitModifiedMap = loadGitModifiedDates();
   const entries = fs.readdirSync(POSTS_DIR, { withFileTypes: true });
   const posts: BlogPost[] = [];
 
@@ -587,12 +752,12 @@ export function loadAllPosts(): BlogPost[] {
           : null;
 
       if (!mdPath) continue;
-      const post = parsePostFile(mdPath, entry.name, true, authorsMap);
+      const post = parsePostFile(mdPath, entry.name, true, authorsMap, gitModifiedMap);
       if (post) posts.push(post);
     } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.md')) {
       const slug = entry.name.replace(/\.md$/i, '');
       const filePath = path.join(POSTS_DIR, entry.name);
-      const post = parsePostFile(filePath, slug, false, authorsMap);
+      const post = parsePostFile(filePath, slug, false, authorsMap, gitModifiedMap);
       if (post) posts.push(post);
     }
   }

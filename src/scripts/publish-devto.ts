@@ -9,11 +9,14 @@
  * Usage:
  *   npm run publish:devto                                    # Sync all posts with devto: true
  *   npm run publish:devto -- --dry-run                       # Preview opted-in posts without API calls
+ *   npm run publish:devto -- --no-update                     # Publish only new posts; skip updating existing DEV articles
  *   npm run publish:devto -- posts/2026-11-13-my-post.md     # Sync a specific opted-in post
+ *   npm run publish:devto -- posts/2026-11-13-my-post.md --update  # Force-allow updating existing DEV article
  */
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { loadAllPosts, type BlogPost } from '../lib/posts';
 import { SITE_CONFIG } from '../lib/site';
 import { prepareSyndicatedMarkdown } from '../lib/syndication';
@@ -191,12 +194,13 @@ function isUnchanged(
   return existing.body_markdown !== undefined;
 }
 
-async function main() {
+export async function runPublishDevto(args: string[] = process.argv.slice(2)) {
   loadDotEnvIfNeeded();
 
-  const args = process.argv.slice(2);
   const dryRun = args.includes('--dry-run');
   const force = args.includes('--force');
+  const forceUpdate = args.includes('--update') || args.includes('--sync-updates');
+  const skipUpdates = args.includes('--no-update') || args.includes('--only-new');
   const targetArg = args.find((a) => !a.startsWith('--'));
 
   const allPosts = loadAllPosts();
@@ -218,10 +222,10 @@ async function main() {
       process.exit(1);
     }
 
-    candidatePosts = matched.filter((p) => p.devto || force);
+    candidatePosts = matched.filter((p) => p.devto || force || forceUpdate);
     if (candidatePosts.length === 0) {
       console.log(
-        `Skipped "${matched[0].title}" because \`devto: true\` is not set in its frontmatter (pass --force to override).`
+        `Skipped "${matched[0].title}" because \`devto: true\` is not set in its frontmatter (pass --force or --update to override).`
       );
       return;
     }
@@ -254,12 +258,20 @@ async function main() {
         ? post.ogImage
         : `${siteBase}${post.ogImage}`;
       const tags = sanitizeDevtoTags(post.tags);
+      const canUpdateExisting =
+        !skipUpdates && (post.devtoUpdate || force || forceUpdate);
       console.log(`  • ${post.title}`);
-      console.log(`    Slug:          ${post.slug}`);
-      console.log(`    Status:        ${post.devtoDraft ? 'DRAFT' : 'PUBLISHED (LIVE)'}`);
-      console.log(`    Tags:          ${tags.join(', ')}`);
-      console.log(`    Canonical URL: ${canonicalUrl}`);
-      console.log(`    Cover Image:   ${mainImage}\n`);
+      console.log(`    Slug:            ${post.slug}`);
+      console.log(`    Status:          ${post.devtoDraft ? 'DRAFT' : 'PUBLISHED (LIVE)'}`);
+      console.log(
+        `    Update Existing: ${canUpdateExisting ? 'YES' : 'NO (will skip if already on dev.to)'}`
+      );
+      if (post.isUpdated && post.formattedUpdatedDate) {
+        console.log(`    Last Updated:    ${post.formattedUpdatedDate}`);
+      }
+      console.log(`    Tags:            ${tags.join(', ')}`);
+      console.log(`    Canonical URL:   ${canonicalUrl}`);
+      console.log(`    Cover Image:     ${mainImage}\n`);
     }
     return;
   }
@@ -286,6 +298,7 @@ async function main() {
   let created = 0;
   let updated = 0;
   let unchanged = 0;
+  let skippedUpdates = 0;
   let didWrite = false;
 
   for (const post of orderedPosts) {
@@ -317,10 +330,28 @@ async function main() {
       byCanonical.get(normalizeUrlForCompare(canonicalUrl)) ||
       byTitle.get(post.title.trim().toLowerCase());
 
-    if (existing && !force && isUnchanged(existing, payload.article)) {
-      console.log(`  [=] Unchanged on dev.to: "${post.title}" (${existing.url})`);
-      unchanged++;
-      continue;
+    if (existing) {
+      if (skipUpdates) {
+        console.log(
+          `  [skip] Already on dev.to (--no-update): "${post.title}" (${existing.url})`
+        );
+        skippedUpdates++;
+        continue;
+      }
+
+      if (!post.devtoUpdate && !force && !forceUpdate) {
+        console.log(
+          `  [skip] Update disabled (devto_update: false): "${post.title}" (${existing.url})`
+        );
+        skippedUpdates++;
+        continue;
+      }
+
+      if (!force && isUnchanged(existing, payload.article)) {
+        console.log(`  [=] Unchanged on dev.to: "${post.title}" (${existing.url})`);
+        unchanged++;
+        continue;
+      }
     }
 
     if (didWrite) {
@@ -356,11 +387,14 @@ async function main() {
   }
 
   console.log(
-    `\ndev.to sync complete — Created: ${created}, Updated: ${updated}, Unchanged: ${unchanged}`
+    `\ndev.to sync complete — Created: ${created}, Updated: ${updated}, Unchanged: ${unchanged}, Skipped updates: ${skippedUpdates}`
   );
 }
 
-main().catch((err) => {
-  console.error('Error syncing posts to dev.to:', err);
-  process.exit(1);
-});
+const currentFilePath = fileURLToPath(import.meta.url);
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(currentFilePath)) {
+  runPublishDevto().catch((err) => {
+    console.error('Error syncing posts to dev.to:', err);
+    process.exit(1);
+  });
+}

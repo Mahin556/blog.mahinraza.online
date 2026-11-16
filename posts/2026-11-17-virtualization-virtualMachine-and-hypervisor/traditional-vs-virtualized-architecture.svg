@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="580" viewBox="0 0 1080 580" role="img" aria-labelledby="title-arch desc-arch">
+  <title id="title-arch">Traditional Bare-Metal Server vs. Virtualized Host Architecture</title>
+  <desc id="desc-arch">Side-by-side comparison showing a single OS coupled to physical hardware versus a hypervisor abstracting physical CPU, RAM, NIC, and storage across three isolated virtual machines.</desc>
+
+  <defs>
+    <style>
+      .font-sans { font-family: Inter, 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    </style>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0d9488" />
+    </marker>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect x="0" y="0" width="1080" height="580" rx="16" fill="#f8fafc" />
+  <rect x="1" y="1" width="1078" height="578" rx="15" fill="none" stroke="#e2e8f0" stroke-width="2" />
+
+  <!-- Top Header -->
+  <text x="40" y="44" class="font-mono" font-size="12" font-weight="600" fill="#0f766e" letter-spacing="0.08em">// ARCHITECTURE COMPARISON</text>
+  <text x="40" y="72" class="font-sans" font-size="22" font-weight="700" fill="#0f172a">Traditional Server vs. Virtualized Host System</text>
+
+  <!-- ========================================================= -->
+  <!-- LEFT PANEL: Traditional Architecture                      -->
+  <!-- ========================================================= -->
+  <rect x="40" y="98" width="440" height="444" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+  <rect x="40" y="98" width="440" height="44" rx="12" fill="#f1f5f9" />
+  <rect x="40" y="130" width="440" height="12" fill="#f1f5f9" />
+  <line x1="40" y1="142" x2="480" y2="142" stroke="#cbd5e1" stroke-width="1" />
+  <text x="62" y="125" class="font-sans" font-size="15" font-weight="700" fill="#1e293b">1. Traditional Dedicated Server</text>
+  <rect x="336" y="109" width="124" height="22" rx="11" fill="#fef3c7" stroke="#f59e0b" stroke-width="1" />
+  <text x="398" y="124" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="600" fill="#92400e">~15-25% Utilized</text>
+
+  <!-- App & Idle Capacity Layer -->
+  <rect x="68" y="166" width="220" height="118" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" />
+  <text x="178" y="196" text-anchor="middle" class="font-sans" font-size="14" font-weight="700" fill="#0f172a">Single Workload</text>
+  <text x="178" y="218" text-anchor="middle" class="font-mono" font-size="11.5" fill="#475569">App + Runtime Libs</text>
+  <rect x="92" y="234" width="172" height="30" rx="6" fill="#e2e8f0" />
+  <text x="178" y="253" text-anchor="middle" class="font-mono" font-size="11" font-weight="500" fill="#334155">1 OS Environment Only</text>
+
+  <!-- Idle Hardware Box -->
+  <rect x="302" y="166" width="150" height="118" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5" stroke-dasharray="5,4" />
+  <text x="377" y="214" text-anchor="middle" class="font-sans" font-size="13" font-weight="700" fill="#b45309">Idle Capacity</text>
+  <text x="377" y="235" text-anchor="middle" class="font-sans" font-size="11.5" fill="#92400e">Unused CPU &amp; RAM</text>
+  <text x="377" y="253" text-anchor="middle" class="font-sans" font-size="11" fill="#b45309">(Stranded resources)</text>
+
+  <!-- Single Host OS -->
+  <rect x="68" y="308" width="384" height="72" rx="8" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5" />
+  <text x="260" y="339" text-anchor="middle" class="font-sans" font-size="15" font-weight="700" fill="#0f172a">Single Host Operating System</text>
+  <text x="260" y="360" text-anchor="middle" class="font-mono" font-size="11.5" fill="#475569">Tightly coupled to physical hardware</text>
+
+  <line x1="260" y1="382" x2="260" y2="412" stroke="#64748b" stroke-width="1.75" marker-end="url(#arrow-slate)" />
+
+  <!-- Physical Hardware -->
+  <rect x="68" y="418" width="384" height="98" rx="8" fill="#0f172a" />
+  <text x="260" y="446" text-anchor="middle" class="font-sans" font-size="14" font-weight="700" fill="#f8fafc">Physical Server Hardware</text>
+  <g class="font-mono" font-size="11" fill="#cbd5e1">
+    <rect x="86" y="462" width="80" height="36" rx="5" fill="#1e293b" stroke="#334155" />
+    <text x="126" y="484" text-anchor="middle">CPU</text>
+    <rect x="176" y="462" width="80" height="36" rx="5" fill="#1e293b" stroke="#334155" />
+    <text x="216" y="484" text-anchor="middle">RAM</text>
+    <rect x="266" y="462" width="80" height="36" rx="5" fill="#1e293b" stroke="#334155" />
+    <text x="306" y="484" text-anchor="middle">NVMe</text>
+    <rect x="356" y="462" width="80" height="36" rx="5" fill="#1e293b" stroke="#334155" />
+    <text x="396" y="484" text-anchor="middle">NIC</text>
+  </g>
+
+  <!-- ========================================================= -->
+  <!-- RIGHT PANEL: Virtualized Host System                      -->
+  <!-- ========================================================= -->
+  <rect x="512" y="98" width="528" height="444" rx="12" fill="#ffffff" stroke="#0d9488" stroke-width="2" />
+  <rect x="512" y="98" width="528" height="44" rx="12" fill="#f0fdfa" />
+  <rect x="512" y="130" width="528" height="12" fill="#f0fdfa" />
+  <line x1="512" y1="142" x2="1040" y2="142" stroke="#99f6e4" stroke-width="1.5" />
+  <text x="534" y="125" class="font-sans" font-size="15" font-weight="700" fill="#0f766e">2. Virtualized Host System (Multi-VM)</text>
+  <rect x="880" y="109" width="140" height="22" rx="11" fill="#ccfbf1" stroke="#14b8a6" stroke-width="1" />
+  <text x="950" y="124" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="600" fill="#115e59">Isolated &amp; Efficient</text>
+
+  <!-- Guest Systems Label -->
+  <text x="536" y="164" class="font-mono" font-size="10.5" font-weight="600" fill="#0f766e" letter-spacing="0.06em">GUEST SYSTEMS (ISOLATED VIRTUAL MACHINES)</text>
+
+  <!-- Guest VM 1 -->
+  <rect x="536" y="174" width="150" height="132" rx="8" fill="#f8fafc" stroke="#14b8a6" stroke-width="1.5" />
+  <rect x="536" y="174" width="150" height="26" rx="8" fill="#0f766e" />
+  <rect x="536" y="190" width="150" height="10" fill="#0f766e" />
+  <text x="611" y="191" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#ffffff">Guest VM 1</text>
+  <rect x="548" y="210" width="126" height="26" rx="4" fill="#e0f2fe" stroke="#7dd3fc" />
+  <text x="611" y="227" text-anchor="middle" class="font-sans" font-size="11.5" font-weight="600" fill="#0369a1">Web API + NGINX</text>
+  <rect x="548" y="242" width="126" height="26" rx="4" fill="#f1f5f9" stroke="#cbd5e1" />
+  <text x="611" y="259" text-anchor="middle" class="font-mono" font-size="11" fill="#334155">Ubuntu 24.04 OS</text>
+  <text x="611" y="291" text-anchor="middle" class="font-mono" font-size="10" fill="#64748b">2 vCPU · 4 GB vRAM</text>
+
+  <!-- Guest VM 2 -->
+  <rect x="701" y="174" width="150" height="132" rx="8" fill="#f8fafc" stroke="#14b8a6" stroke-width="1.5" />
+  <rect x="701" y="174" width="150" height="26" rx="8" fill="#0f766e" />
+  <rect x="701" y="190" width="150" height="10" fill="#0f766e" />
+  <text x="776" y="191" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#ffffff">Guest VM 2</text>
+  <rect x="713" y="210" width="126" height="26" rx="4" fill="#e0f2fe" stroke="#7dd3fc" />
+  <text x="776" y="227" text-anchor="middle" class="font-sans" font-size="11.5" font-weight="600" fill="#0369a1">PostgreSQL DB</text>
+  <rect x="713" y="242" width="126" height="26" rx="4" fill="#f1f5f9" stroke="#cbd5e1" />
+  <text x="776" y="259" text-anchor="middle" class="font-mono" font-size="11" fill="#334155">Rocky Linux 9 OS</text>
+  <text x="776" y="291" text-anchor="middle" class="font-mono" font-size="10" fill="#64748b">4 vCPU · 16 GB vRAM</text>
+
+  <!-- Guest VM 3 -->
+  <rect x="866" y="174" width="150" height="132" rx="8" fill="#f8fafc" stroke="#14b8a6" stroke-width="1.5" />
+  <rect x="866" y="174" width="150" height="26" rx="8" fill="#0f766e" />
+  <rect x="866" y="190" width="150" height="10" fill="#0f766e" />
+  <text x="941" y="191" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#ffffff">Guest VM 3</text>
+  <rect x="878" y="210" width="126" height="26" rx="4" fill="#e0f2fe" stroke="#7dd3fc" />
+  <text x="941" y="227" text-anchor="middle" class="font-sans" font-size="11.5" font-weight="600" fill="#0369a1">.NET Worker</text>
+  <rect x="878" y="242" width="126" height="26" rx="4" fill="#f1f5f9" stroke="#cbd5e1" />
+  <text x="941" y="259" text-anchor="middle" class="font-mono" font-size="11" fill="#334155">Windows Server</text>
+  <text x="941" y="291" text-anchor="middle" class="font-mono" font-size="10" fill="#64748b">2 vCPU · 8 GB vRAM</text>
+
+  <!-- Arrows from VMs to Hypervisor -->
+  <line x1="611" y1="306" x2="611" y2="328" stroke="#0d9488" stroke-width="1.75" marker-end="url(#arrow-teal)" />
+  <line x1="776" y1="306" x2="776" y2="328" stroke="#0d9488" stroke-width="1.75" marker-end="url(#arrow-teal)" />
+  <line x1="941" y1="306" x2="941" y2="328" stroke="#0d9488" stroke-width="1.75" marker-end="url(#arrow-teal)" />
+
+  <!-- Hypervisor Layer -->
+  <rect x="536" y="332" width="480" height="60" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="2" />
+  <text x="776" y="358" text-anchor="middle" class="font-sans" font-size="15" font-weight="700" fill="#115e59">Hypervisor / Virtual Machine Monitor (VMM)</text>
+  <text x="776" y="378" text-anchor="middle" class="font-mono" font-size="11" fill="#0f766e">CPU Scheduling · Memory Translation (EPT/NPT) · Virtual I/O · Isolation</text>
+
+  <line x1="776" y1="392" x2="776" y2="414" stroke="#0d9488" stroke-width="1.75" marker-end="url(#arrow-teal)" />
+
+  <!-- Physical Host System -->
+  <rect x="536" y="418" width="480" height="98" rx="8" fill="#0f172a" />
+  <text x="776" y="446" text-anchor="middle" class="font-sans" font-size="14" font-weight="700" fill="#f8fafc">Host System (Physical Server Hardware)</text>
+  <g class="font-mono" font-size="11" fill="#5eead4">
+    <rect x="556" y="462" width="102" height="36" rx="5" fill="#1e293b" stroke="#0f766e" />
+    <text x="607" y="484" text-anchor="middle">Physical CPU</text>
+    <rect x="668" y="462" width="102" height="36" rx="5" fill="#1e293b" stroke="#0f766e" />
+    <text x="719" y="484" text-anchor="middle">Host RAM</text>
+    <rect x="780" y="462" width="102" height="36" rx="5" fill="#1e293b" stroke="#0f766e" />
+    <text x="831" y="484" text-anchor="middle">NVMe / SAN</text>
+    <rect x="892" y="462" width="104" height="36" rx="5" fill="#1e293b" stroke="#0f766e" />
+    <text x="944" y="484" text-anchor="middle">Physical NIC</text>
+  </g>
+</svg>

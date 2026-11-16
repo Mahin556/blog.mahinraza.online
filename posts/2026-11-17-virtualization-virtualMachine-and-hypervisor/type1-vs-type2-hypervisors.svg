@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="600" viewBox="0 0 1080 600" role="img" aria-labelledby="title-hyp desc-hyp">
+  <title id="title-hyp">Type 1 (Bare-Metal) vs. Type 2 (Hosted) Hypervisor Architecture</title>
+  <desc id="desc-hyp">Architectural comparison between Type 1 Bare-Metal hypervisors running directly on server hardware and Type 2 Hosted hypervisors running on top of a host operating system.</desc>
+
+  <defs>
+    <style>
+      .font-sans { font-family: Inter, 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    </style>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect x="0" y="0" width="1080" height="600" rx="16" fill="#f8fafc" />
+  <rect x="1" y="1" width="1078" height="598" rx="15" fill="none" stroke="#e2e8f0" stroke-width="2" />
+
+  <!-- Header -->
+  <text x="40" y="44" class="font-mono" font-size="12" font-weight="600" fill="#0f766e" letter-spacing="0.08em">// HYPERVISOR TAXONOMY</text>
+  <text x="40" y="72" class="font-sans" font-size="22" font-weight="700" fill="#0f172a">Type 1 (Bare-Metal) vs. Type 2 (Hosted) Hypervisors</text>
+
+  <!-- ========================================================= -->
+  <!-- LEFT CARD: Type 1 Bare-Metal Hypervisor                   -->
+  <!-- ========================================================= -->
+  <rect x="40" y="98" width="484" height="464" rx="12" fill="#ffffff" stroke="#0d9488" stroke-width="2" />
+  <rect x="40" y="98" width="484" height="50" rx="12" fill="#f0fdfa" />
+  <rect x="40" y="136" width="484" height="12" fill="#f0fdfa" />
+  <line x1="40" y1="148" x2="524" y2="148" stroke="#99f6e4" stroke-width="1.5" />
+
+  <text x="64" y="128" class="font-sans" font-size="16" font-weight="700" fill="#0f766e">Type 1 Hypervisor (Bare-Metal)</text>
+  <rect x="372" y="112" width="132" height="22" rx="11" fill="#ccfbf1" stroke="#14b8a6" />
+  <text x="438" y="127" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="600" fill="#115e59">Production / Cloud</text>
+
+  <!-- Guest VMs Row (Type 1) -->
+  <g>
+    <rect x="64" y="172" width="136" height="114" rx="8" fill="#f8fafc" stroke="#14b8a6" stroke-width="1.5" />
+    <text x="132" y="196" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#0f766e">Guest VM 1</text>
+    <rect x="76" y="208" width="112" height="30" rx="4" fill="#e0f2fe" />
+    <text x="132" y="227" text-anchor="middle" class="font-sans" font-size="11.5" font-weight="600" fill="#0369a1">K8s Worker</text>
+    <rect x="76" y="244" width="112" height="30" rx="4" fill="#f1f5f9" />
+    <text x="132" y="263" text-anchor="middle" class="font-mono" font-size="10.5" fill="#334155">Guest Linux OS</text>
+
+    <rect x="214" y="172" width="136" height="114" rx="8" fill="#f8fafc" stroke="#14b8a6" stroke-width="1.5" />
+    <text x="282" y="196" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#0f766e">Guest VM 2</text>
+    <rect x="226" y="208" width="112" height="30" rx="4" fill="#e0f2fe" />
+    <text x="282" y="227" text-anchor="middle" class="font-sans" font-size="11.5" font-weight="600" fill="#0369a1">Database Node</text>
+    <rect x="226" y="244" width="112" height="30" rx="4" fill="#f1f5f9" />
+    <text x="282" y="263" text-anchor="middle" class="font-mono" font-size="10.5" fill="#334155">Guest Linux OS</text>
+
+    <rect x="364" y="172" width="136" height="114" rx="8" fill="#f8fafc" stroke="#14b8a6" stroke-width="1.5" />
+    <text x="432" y="196" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#0f766e">Guest VM 3</text>
+    <rect x="376" y="208" width="112" height="30" rx="4" fill="#e0f2fe" />
+    <text x="432" y="227" text-anchor="middle" class="font-sans" font-size="11.5" font-weight="600" fill="#0369a1">AD / Legacy</text>
+    <rect x="376" y="244" width="112" height="30" rx="4" fill="#f1f5f9" />
+    <text x="432" y="263" text-anchor="middle" class="font-mono" font-size="10.5" fill="#334155">Windows Server</text>
+  </g>
+
+  <!-- Direct Notice Strip -->
+  <rect x="64" y="302" width="436" height="28" rx="6" fill="#ecfdf5" stroke="#a7f3d0" />
+  <text x="282" y="320" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#065f46">No general-purpose desktop Host OS layer in between</text>
+
+  <!-- Type 1 Hypervisor Box -->
+  <rect x="64" y="344" width="436" height="82" rx="8" fill="#0f766e" />
+  <text x="282" y="373" text-anchor="middle" class="font-sans" font-size="15" font-weight="700" fill="#ffffff">Type 1 Bare-Metal Hypervisor</text>
+  <text x="282" y="395" text-anchor="middle" class="font-mono" font-size="11" fill="#ccfbf1">VMware ESXi · Linux KVM · Hyper-V · AWS Nitro · AHV</text>
+  <text x="282" y="413" text-anchor="middle" class="font-sans" font-size="11" fill="#99f6e4">Direct hardware scheduling via Intel VT-x / AMD-V</text>
+
+  <!-- Hardware Box -->
+  <rect x="64" y="440" width="436" height="68" rx="8" fill="#0f172a" />
+  <text x="282" y="468" text-anchor="middle" class="font-sans" font-size="14" font-weight="700" fill="#f8fafc">Physical Host Hardware (Bare Metal)</text>
+  <text x="282" y="490" text-anchor="middle" class="font-mono" font-size="11" fill="#94a3b8">Server CPUs · ECC Memory · NVMe / SAN · 25/100GbE NICs</text>
+
+  <!-- Footer Note -->
+  <text x="282" y="538" text-anchor="middle" class="font-sans" font-size="12" font-weight="600" fill="#0f766e">Near-native speed · Minimal attack surface · Cloud scale</text>
+
+  <!-- ========================================================= -->
+  <!-- RIGHT CARD: Type 2 Hosted Hypervisor                      -->
+  <!-- ========================================================= -->
+  <rect x="556" y="98" width="484" height="464" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+  <rect x="556" y="98" width="484" height="50" rx="12" fill="#f1f5f9" />
+  <rect x="556" y="136" width="484" height="12" fill="#f1f5f9" />
+  <line x1="556" y1="148" x2="1040" y2="148" stroke="#cbd5e1" stroke-width="1.5" />
+
+  <text x="580" y="128" class="font-sans" font-size="16" font-weight="700" fill="#1e293b">Type 2 Hypervisor (Hosted)</text>
+  <rect x="884" y="112" width="136" height="22" rx="11" fill="#e0f2fe" stroke="#38bdf8" />
+  <text x="952" y="127" text-anchor="middle" class="font-mono" font-size="10.5" font-weight="600" fill="#0369a1">Dev / Local Labs</text>
+
+  <!-- Guest VMs + Host Apps Row (Type 2) -->
+  <g>
+    <rect x="580" y="172" width="136" height="98" rx="8" fill="#f8fafc" stroke="#0284c7" stroke-width="1.5" />
+    <text x="648" y="194" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#0369a1">Guest VM 1</text>
+    <rect x="592" y="204" width="112" height="26" rx="4" fill="#e0f2fe" />
+    <text x="648" y="221" text-anchor="middle" class="font-sans" font-size="11" font-weight="600" fill="#0369a1">Kubeadm Lab</text>
+    <rect x="592" y="235" width="112" height="24" rx="4" fill="#f1f5f9" />
+    <text x="648" y="251" text-anchor="middle" class="font-mono" font-size="10.5" fill="#334155">Ubuntu Guest</text>
+
+    <rect x="730" y="172" width="136" height="98" rx="8" fill="#f8fafc" stroke="#0284c7" stroke-width="1.5" />
+    <text x="798" y="194" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#0369a1">Guest VM 2</text>
+    <rect x="742" y="204" width="112" height="26" rx="4" fill="#e0f2fe" />
+    <text x="798" y="221" text-anchor="middle" class="font-sans" font-size="11" font-weight="600" fill="#0369a1">Test Sandbox</text>
+    <rect x="742" y="235" width="112" height="24" rx="4" fill="#f1f5f9" />
+    <text x="798" y="251" text-anchor="middle" class="font-mono" font-size="10.5" fill="#334155">Debian Guest</text>
+
+    <!-- Desktop Apps sitting beside Hypervisor -->
+    <rect x="880" y="172" width="136" height="174" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,3" />
+    <text x="948" y="218" text-anchor="middle" class="font-sans" font-size="12.5" font-weight="700" fill="#334155">Host Apps</text>
+    <text x="948" y="240" text-anchor="middle" class="font-mono" font-size="10.5" fill="#64748b">Browser · IDE</text>
+    <text x="948" y="258" text-anchor="middle" class="font-mono" font-size="10.5" fill="#64748b">Terminal · Slack</text>
+    <text x="948" y="294" text-anchor="middle" class="font-sans" font-size="10.5" fill="#64748b">Share RAM/CPU</text>
+    <text x="948" y="310" text-anchor="middle" class="font-sans" font-size="10.5" fill="#64748b">on Host OS</text>
+  </g>
+
+  <!-- Type 2 Hypervisor App Box -->
+  <rect x="580" y="284" width="286" height="62" rx="8" fill="#0284c7" />
+  <text x="723" y="310" text-anchor="middle" class="font-sans" font-size="14" font-weight="700" fill="#ffffff">Type 2 Hosted Hypervisor</text>
+  <text x="723" y="330" text-anchor="middle" class="font-mono" font-size="10.5" fill="#e0f2fe">VirtualBox · VMware Workstation · Parallels</text>
+
+  <!-- Host Operating System Box -->
+  <rect x="580" y="360" width="436" height="66" rx="8" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1.5" />
+  <text x="798" y="388" text-anchor="middle" class="font-sans" font-size="14.5" font-weight="700" fill="#0f172a">Host Operating System</text>
+  <text x="798" y="409" text-anchor="middle" class="font-mono" font-size="11" fill="#475569">Windows 11 · macOS · Ubuntu Desktop (Manages Hardware Drivers)</text>
+
+  <!-- Laptop / Workstation Hardware Box -->
+  <rect x="580" y="440" width="436" height="68" rx="8" fill="#0f172a" />
+  <text x="798" y="468" text-anchor="middle" class="font-sans" font-size="14" font-weight="700" fill="#f8fafc">Physical Host Hardware (Workstation / Laptop)</text>
+  <text x="798" y="490" text-anchor="middle" class="font-mono" font-size="11" fill="#94a3b8">Desktop CPU · System Memory · Local SSD · Wi-Fi / Ethernet</text>
+
+  <!-- Footer Note -->
+  <text x="798" y="538" text-anchor="middle" class="font-sans" font-size="12" font-weight="600" fill="#0369a1">Instant install · Easy multi-OS testing · Higher OS overhead</text>
+</svg>

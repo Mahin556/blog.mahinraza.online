@@ -12,6 +12,9 @@ export const GET: APIRoute = () => {
     categorySlug: post.categorySlug,
     tags: post.tags,
     formattedDate: post.formattedDate,
+    ...(post.isUpdated && post.formattedUpdatedDate
+      ? { formattedUpdatedDate: post.formattedUpdatedDate }
+      : {}),
     readingTimeText: post.readingTimeText,
   }));
 

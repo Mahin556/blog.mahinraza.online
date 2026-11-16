@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import TagPills from '../../components/TagPills.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
 import PostCard from '../../components/PostCard.astro';
+import Comments from '../../components/Comments.astro';
 import { loadAllPosts, getRelatedPosts, type BlogPost } from '../../lib/posts';
 import { renderPostMarkdown } from '../../lib/markdown';
 import { SITE_CONFIG } from '../../lib/site';
@@ -34,6 +35,7 @@ const encodedTitle = encodeURIComponent(post.title);
 const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
 const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
 const hnShareUrl = `https://news.ycombinator.com/submitlink?u=${encodedUrl}&t=${encodedTitle}`;
+const showComments = SITE_CONFIG.comments.enabled && post.comments;
 ---
 
 <BaseLayout
@@ -42,7 +44,7 @@ const hnShareUrl = `https://news.ycombinator.com/submitlink?u=${encodedUrl}&t=${
   ogImage={post.ogImage}
   ogType="article"
   publishedTime={post.dateISO}
-  modifiedTime={post.dateISO}
+  modifiedTime={post.updatedDateISO ?? post.dateISO}
   authorName={post.author.name}
   authorUrl={post.author.githubUrl}
   tags={post.tags}
@@ -72,8 +74,19 @@ const hnShareUrl = `https://news.ycombinator.com/submitlink?u=${encodedUrl}&t=${
           {post.categorySlug}
         </a>
         <span class="hidden sm:inline text-slate-300 dark:text-slate-700" aria-hidden="true">&middot;</span>
-        <span class="hidden sm:inline text-slate-500 dark:text-slate-400">
-          <time datetime={post.dateISO}>{post.formattedDate}</time> &middot; {post.readingTimeText}
+        <span class="hidden sm:inline-flex items-center flex-wrap gap-1.5 text-slate-500 dark:text-slate-400">
+          <time datetime={post.dateISO}>{post.formattedDate}</time>
+          {post.isUpdated && post.formattedUpdatedDate && (
+            <>
+              <span aria-hidden="true">&middot;</span>
+              <span class="inline-flex items-center gap-1 rounded bg-teal-50 dark:bg-teal-950/60 border border-teal-200/80 dark:border-teal-800/70 px-1.5 py-0.5 text-[11px] font-medium text-teal-800 dark:text-teal-300">
+                <span>Updated</span>
+                <time datetime={post.updatedDateISO}>{post.formattedUpdatedDate}</time>
+              </span>
+            </>
+          )}
+          <span aria-hidden="true">&middot;</span>
+          <span>{post.readingTimeText}</span>
         </span>
       </div>
 
@@ -114,7 +127,13 @@ const hnShareUrl = `https://news.ycombinator.com/submitlink?u=${encodedUrl}&t=${
               {post.author.name}
             </div>
             <div class="font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:hidden">
-              <time datetime={post.dateISO}>{post.formattedDate}</time> &middot; {post.readingTimeText}
+              <time datetime={post.dateISO}>{post.formattedDate}</time>
+              {post.isUpdated && post.formattedUpdatedDate && (
+                <span class="text-teal-700 dark:text-teal-400 font-medium">
+                  {' '}&middot; Updated <time datetime={post.updatedDateISO}>{post.formattedUpdatedDate}</time>
+                </span>
+              )}
+              {' '}&middot; {post.readingTimeText}
             </div>
             <div class="hidden sm:block font-mono text-[11px] text-slate-500 dark:text-slate-400">
               @{post.author.username} &middot; {SITE_CONFIG.shortRole}
@@ -124,6 +143,19 @@ const hnShareUrl = `https://news.ycombinator.com/submitlink?u=${encodedUrl}&t=${
 
         <!-- Compact Header Share Controls -->
         <div class="flex items-center gap-1.5">
+          {showComments && (
+            <a
+              href="#comments"
+              aria-label="Jump to comments"
+              title="Jump to comments"
+              class="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700/90 bg-slate-50 dark:bg-slate-800/80 px-2.5 font-mono text-[11px] font-medium text-slate-600 dark:text-slate-300 hover:border-teal-300 dark:hover:border-teal-500/60 hover:bg-white dark:hover:bg-slate-800 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+            >
+              <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <span class="hidden sm:inline">Comments</span>
+            </a>
+          )}
           <a
             href={twitterShareUrl}
             target="_blank"
@@ -167,12 +199,13 @@ const hnShareUrl = `https://news.ycombinator.com/submitlink?u=${encodedUrl}&t=${
   <div class="mx-auto max-w-7xl px-6 py-10 sm:py-12 lg:px-8">
     <div class="mx-auto flex max-w-5xl items-start justify-between gap-12">
       <!-- Main Article Column -->
-      <div class="min-w-0 max-w-3xl flex-1 rounded-xl border border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-slate-900/75 p-6 sm:p-10 shadow-[0_1px_3px_rgba(15,23,42,0.03)] dark:shadow-[0_12px_32px_rgba(2,6,23,0.4)]">
-        <!-- Mobile / Tablet Collapsible TOC -->
-        <TableOfContents items={toc} variant="mobile" />
+      <div class="min-w-0 max-w-3xl flex-1">
+        <div class="rounded-xl border border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-slate-900/75 p-6 sm:p-10 shadow-[0_1px_3px_rgba(15,23,42,0.03)] dark:shadow-[0_12px_32px_rgba(2,6,23,0.4)]">
+          <!-- Mobile / Tablet Collapsible TOC -->
+          <TableOfContents items={toc} variant="mobile" />
 
-        <!-- Rendered Markdown Body -->
-        <article id="article-body" class="blog-body" set:html={html} />
+          <!-- Rendered Markdown Body -->
+          <article id="article-body" class="blog-body" set:html={html} />
 
         <!-- Bottom Share & Edit Strip -->
         <div class="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-slate-200 dark:border-slate-800 pt-6">
@@ -274,6 +307,10 @@ const hnShareUrl = `https://news.ycombinator.com/submitlink?u=${encodedUrl}&t=${
             </div>
           </div>
         </div>
+        </div>
+
+        <!-- Comments Section -->
+        {showComments && <Comments slug={post.slug} title={post.title} />}
       </div>
 
       <!-- Desktop Sticky TOC -->

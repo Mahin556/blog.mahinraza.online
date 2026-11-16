@@ -26,7 +26,13 @@ const { post } = Astro.props;
         </a>
 
         <span class="font-mono text-[11px] text-slate-500 dark:text-slate-400">
-          {post.formattedDate} &middot; {post.readingTimeText}
+          {post.formattedDate}
+          {post.isUpdated && post.formattedUpdatedDate && (
+            <span class="text-teal-700 dark:text-teal-400 font-medium">
+              {' '}&middot; Updated {post.formattedUpdatedDate}
+            </span>
+          )}
+          {' '}&middot; {post.readingTimeText}
         </span>
       </div>
 

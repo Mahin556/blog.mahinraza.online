@@ -16,6 +16,7 @@
     "validate": "npx tsx src/scripts/validate-blogs.ts",
     "generate-social-image": "npx tsx src/scripts/generate-social-image.ts",
     "generate-template": "npx tsx src/scripts/generate-template.ts",
+    "update-post": "npx tsx src/scripts/update-post.ts",
     "publish:devto": "npx tsx src/scripts/publish-devto.ts",
     "publish:devto:dry": "npx tsx src/scripts/publish-devto.ts --dry-run",
     "publish:hashnode": "npx tsx src/scripts/publish-hashnode.ts",

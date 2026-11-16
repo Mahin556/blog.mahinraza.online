@@ -33,9 +33,19 @@ const accent = getCardAccent(index);
       >
         {post.category}
       </a>
-      <time datetime={post.dateISO} class="shrink-0 font-mono text-[11px] text-slate-400 dark:text-slate-500">
-        {post.formattedDate}
-      </time>
+      {post.isUpdated && post.formattedUpdatedDate ? (
+        <time
+          datetime={post.updatedDateISO}
+          title={`Published ${post.formattedDate} · Updated ${post.formattedUpdatedDate}`}
+          class="shrink-0 font-mono text-[11px] text-teal-700 dark:text-teal-400"
+        >
+          Updated {post.formattedUpdatedDate}
+        </time>
+      ) : (
+        <time datetime={post.dateISO} class="shrink-0 font-mono text-[11px] text-slate-400 dark:text-slate-500">
+          {post.formattedDate}
+        </time>
+      )}
     </div>
 
     <!-- Title -->

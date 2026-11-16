@@ -1,3 +1,11 @@
+const metaEnv = (import.meta as { env?: Record<string, string | undefined> }).env ?? {};
+const nodeEnv = typeof process !== 'undefined' ? process.env : {};
+
+function readPublicEnv(key: string, fallback = ''): string {
+  const val = metaEnv[key] ?? nodeEnv[key];
+  return typeof val === 'string' && val.trim() ? val.trim() : fallback;
+}
+
 export const SITE_CONFIG = {
   siteUrl: 'https://blog.mahinraza.online',
   title: 'DevOps, Cloud & Site Reliability',
@@ -17,5 +25,19 @@ export const SITE_CONFIG = {
     bio: 'I\'m a DevOps and Cloud Engineer who enjoys working with Linux, Kubernetes, and cloud technologies. I like building things, automating repetitive tasks, exploring new tools, and solving infrastructure problems. I also share my hands-on projects, experiments, and things I learn along the way.',
     avatarUrl: 'https://avatars.githubusercontent.com/Mahin556?s=160',
     githubUrl: 'https://github.com/Mahin556',
+  },
+  comments: {
+    enabled: true,
+    repo: readPublicEnv('PUBLIC_GISCUS_REPO', 'Mahin556/blog.mahinraza.online'),
+    repoId: readPublicEnv('PUBLIC_GISCUS_REPO_ID', ''),
+    category: readPublicEnv('PUBLIC_GISCUS_CATEGORY', 'General'),
+    categoryId: readPublicEnv('PUBLIC_GISCUS_CATEGORY_ID', ''),
+    mapping: 'pathname',
+    strict: '0',
+    reactionsEnabled: '1',
+    emitMetadata: '0',
+    inputPosition: 'top',
+    lang: 'en',
+    discussionsUrl: 'https://github.com/Mahin556/blog.mahinraza.online/discussions',
   },
 } as const;

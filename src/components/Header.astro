@@ -222,6 +222,11 @@ const navLinks = [
           metaTheme.setAttribute('content', nextIsDark ? '#0b1120' : '#0f766e');
         }
         syncThemeAria();
+        window.dispatchEvent(
+          new CustomEvent('theme-change', {
+            detail: { theme: nextIsDark ? 'dark' : 'light' },
+          })
+        );
       });
     });
   })();

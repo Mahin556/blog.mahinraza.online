@@ -45,6 +45,10 @@ function validate() {
       errors.push(`[${post.sourcePath}] Invalid publication date.`);
     }
 
+    if (post.updatedDate && Number.isNaN(post.updatedDate.getTime())) {
+      errors.push(`[${post.sourcePath}] Invalid updated date.`);
+    }
+
     if (post.tags.length === 0) {
       errors.push(`[${post.sourcePath}] Post should have at least one tag.`);
     }
