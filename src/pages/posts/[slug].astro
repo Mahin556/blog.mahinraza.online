@@ -36,6 +36,7 @@ const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodedTitle}&u
 const linkedinShareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
 const hnShareUrl = `https://news.ycombinator.com/submitlink?u=${encodedUrl}&t=${encodedTitle}`;
 const showComments = SITE_CONFIG.comments.enabled && post.comments;
+const hasToc = toc.length > 0;
 ---
 
 <BaseLayout
@@ -59,8 +60,8 @@ const showComments = SITE_CONFIG.comments.enabled && post.comments;
   <div id="reading-progress" class="reading-progress" aria-hidden="true"></div>
 
   <!-- Article Hero -->
-  <header class="border-b border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-[#0d1426] pt-10 pb-10 sm:pt-12 sm:pb-12">
-    <div class="mx-auto max-w-5xl px-6 lg:px-8">
+  <header class="border-b border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-[#0d1426] pt-8 pb-8 sm:pt-12 sm:pb-12">
+    <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
       <!-- Breadcrumb & Metadata -->
       <div class="flex flex-wrap items-center gap-2 font-mono text-xs text-slate-400 dark:text-slate-500">
         <a href="/" class="text-slate-500 dark:text-slate-400 hover:text-teal-700 dark:hover:text-teal-400 transition-colors">
@@ -91,12 +92,12 @@ const showComments = SITE_CONFIG.comments.enabled && post.comments;
       </div>
 
       <!-- Title -->
-      <h1 class="mt-4 max-w-4xl font-display text-3xl sm:text-4xl md:text-[42px] font-extrabold tracking-tight text-slate-900 dark:text-slate-50 leading-[1.18]">
+      <h1 class="mt-4 max-w-5xl font-display text-3xl sm:text-4xl md:text-[42px] font-extrabold tracking-tight text-slate-900 dark:text-slate-50 leading-[1.18]">
         {post.title}
       </h1>
 
       <!-- Summary -->
-      <p class="mt-4 max-w-3xl text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-300">
+      <p class="mt-4 max-w-4xl text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-300">
         {post.description}
       </p>
 
@@ -196,11 +197,29 @@ const showComments = SITE_CONFIG.comments.enabled && post.comments;
   </header>
 
   <!-- Article Body + Desktop TOC -->
-  <div class="mx-auto max-w-7xl px-6 py-10 sm:py-12 lg:px-8">
-    <div class="mx-auto flex max-w-5xl items-start justify-between gap-12">
+  <div
+    class:list={[
+      'mx-auto w-full px-4 pt-8 pb-10 sm:px-6 sm:pt-12 sm:pb-12 lg:px-8',
+      hasToc
+        ? 'xl:max-w-[86rem] xl:pr-6 2xl:max-w-[100rem] 2xl:px-6'
+        : 'max-w-5xl',
+    ]}
+  >
+    <div
+      class:list={[
+        'mx-auto max-w-[60rem] items-start',
+        hasToc &&
+          'xl:max-w-none xl:grid xl:grid-cols-[minmax(0,58.5rem)_14rem] xl:justify-end xl:gap-9 2xl:grid-cols-[1fr_minmax(0,59.5rem)_1fr] 2xl:gap-11',
+      ]}
+    >
       <!-- Main Article Column -->
-      <div class="min-w-0 max-w-3xl flex-1">
-        <div class="rounded-xl border border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-slate-900/75 p-6 sm:p-10 shadow-[0_1px_3px_rgba(15,23,42,0.03)] dark:shadow-[0_12px_32px_rgba(2,6,23,0.4)]">
+      <div
+        class:list={[
+          'min-w-0 w-full',
+          hasToc && 'xl:col-start-1 2xl:col-start-2',
+        ]}
+      >
+        <div class="rounded-xl border border-slate-200/80 dark:border-slate-800/90 bg-white dark:bg-slate-900/75 p-5 sm:p-8 lg:p-10 shadow-[0_1px_3px_rgba(15,23,42,0.03)] dark:shadow-[0_12px_32px_rgba(2,6,23,0.4)]">
           <!-- Mobile / Tablet Collapsible TOC -->
           <TableOfContents items={toc} variant="mobile" />
 
@@ -316,10 +335,12 @@ const showComments = SITE_CONFIG.comments.enabled && post.comments;
       <!-- Desktop Sticky TOC -->
       <TableOfContents items={toc} variant="desktop" />
     </div>
+  </div>
 
-    <!-- Related Posts -->
-    {relatedPosts.length > 0 && (
-      <section aria-labelledby="related-posts-heading" class="mx-auto max-w-5xl mt-16 border-t border-slate-200 dark:border-slate-800 pt-12">
+  <!-- Related Posts -->
+  {relatedPosts.length > 0 && (
+    <div class="mx-auto max-w-5xl px-4 pb-12 sm:px-6 sm:pb-16 lg:px-8">
+      <section aria-labelledby="related-posts-heading" class="mt-4 border-t border-slate-200 dark:border-slate-800 pt-12">
         <div class="flex items-end justify-between gap-4 mb-6">
           <div>
             <div class="font-mono text-xs font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-400">
@@ -339,8 +360,8 @@ const showComments = SITE_CONFIG.comments.enabled && post.comments;
           ))}
         </div>
       </section>
-    )}
-  </div>
+    </div>
+  )}
 
   <!-- Back to Top Button -->
   <button

@@ -38,7 +38,10 @@ const { items, variant } = Astro.props;
 )}
 
 {items.length > 0 && variant === 'desktop' && (
-  <aside class="floating-toc-aside hidden xl:block w-60 shrink-0" aria-label="Table of contents">
+  <aside
+    class="floating-toc-aside hidden xl:block xl:col-start-2 2xl:col-start-3 2xl:justify-self-end w-full max-w-[15rem] shrink-0"
+    aria-label="Table of contents"
+  >
     <div class="sticky top-24">
       <div class="mb-3 flex items-center gap-1.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
         <span class="text-teal-600 dark:text-teal-400" aria-hidden="true">//</span>
@@ -49,7 +52,7 @@ const { items, variant } = Astro.props;
           <a
             href={`#${item.id}`}
             data-toc-link={item.id}
-            class={item.level === 3 ? 'toc-h3' : ''}
+            class:list={[item.level === 3 && 'toc-h3', 'break-words']}
           >
             {item.text}
           </a>
