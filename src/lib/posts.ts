@@ -37,18 +37,6 @@ export interface BlogPost {
   sourcePath: string;
   githubEditUrl: string;
   isDirectoryPost: boolean;
-  /** Whether this post is opted in for cross-posting to DEV Community (dev.to) */
-  devto: boolean;
-  /** Whether edits to this post should also update an existing DEV Community article */
-  devtoUpdate: boolean;
-  /** When true, syncs to DEV Community as an unpublished draft instead of live */
-  devtoDraft: boolean;
-  /** Optional DEV Community series name */
-  devtoSeries?: string;
-  /** Whether this post is opted in for cross-posting to Hashnode */
-  hashnode: boolean;
-  /** When true, syncs to Hashnode as an unpublished draft instead of live */
-  hashnodeDraft: boolean;
   /** Whether comments are enabled on this post (defaults to true) */
   comments: boolean;
 }
@@ -435,22 +423,6 @@ function parsePostFile(
   let rawCategory = typeof fm.category === 'string' ? fm.category.trim() : '';
   let rawUpdated: unknown =
     fm.updated ?? fm.updatedDate ?? fm.lastUpdated ?? fm.lastmod ?? fm.modified;
-  let rawDevto: unknown = fm.devto ?? fm.devio ?? fm.publish_to_devto;
-  let rawDevtoUpdate: unknown =
-    fm.devto_update ?? fm.devio_update ?? fm.update_devto ?? fm.update_devio;
-  let rawDevtoDraft: unknown =
-    fm.devto_draft ?? fm.devio_draft ?? (fm.devto_published === false ? true : undefined);
-  let devtoSeries =
-    typeof fm.devto_series === 'string' && fm.devto_series.trim()
-      ? fm.devto_series.trim()
-      : typeof fm.devio_series === 'string' && fm.devio_series.trim()
-        ? fm.devio_series.trim()
-        : typeof fm.series === 'string' && fm.series.trim()
-          ? fm.series.trim()
-          : undefined;
-  let rawHashnode: unknown = fm.hashnode ?? fm.publish_to_hashnode;
-  let rawHashnodeDraft: unknown =
-    fm.hashnode_draft ?? (fm.hashnode_published === false ? true : undefined);
   let rawComments: unknown = fm.comments;
   let tags: string[] = Array.isArray(fm.tags)
     ? fm.tags.map((t) => String(t).trim()).filter(Boolean)
@@ -505,26 +477,6 @@ function parsePostFile(
       if (/^(Updated|Last\s*Updated|Modified):\s*/i.test(trimmed)) {
         if (rawUpdated === undefined) {
           rawUpdated = trimmed.replace(/^(Updated|Last\s*Updated|Modified):\s*/i, '').trim();
-        }
-        continue;
-      }
-      if (/^(DevTo|DevIo|PublishToDevTo):\s*/i.test(trimmed)) {
-        if (rawDevto === undefined) {
-          rawDevto = trimmed.replace(/^(DevTo|DevIo|PublishToDevTo):\s*/i, '').trim();
-        }
-        continue;
-      }
-      if (/^(DevToUpdate|DevIoUpdate|UpdateDevTo|UpdateDevIo):\s*/i.test(trimmed)) {
-        if (rawDevtoUpdate === undefined) {
-          rawDevtoUpdate = trimmed
-            .replace(/^(DevToUpdate|DevIoUpdate|UpdateDevTo|UpdateDevIo):\s*/i, '')
-            .trim();
-        }
-        continue;
-      }
-      if (/^(Hashnode|PublishToHashnode):\s*/i.test(trimmed)) {
-        if (rawHashnode === undefined) {
-          rawHashnode = trimmed.replace(/^(Hashnode|PublishToHashnode):\s*/i, '').trim();
         }
         continue;
       }
@@ -628,55 +580,6 @@ function parsePostFile(
     }
   }
 
-  const normalizedDevtoStr =
-    typeof rawDevto === 'string' ? rawDevto.trim().toLowerCase() : '';
-  const baseDevto =
-    rawDevto === true ||
-    normalizedDevtoStr === 'true' ||
-    normalizedDevtoStr === 'yes' ||
-    normalizedDevtoStr === '1' ||
-    normalizedDevtoStr === 'draft';
-
-  const normalizedDevtoUpdateStr =
-    typeof rawDevtoUpdate === 'string' ? rawDevtoUpdate.trim().toLowerCase() : '';
-  const explicitDevtoUpdateTrue =
-    rawDevtoUpdate === true ||
-    normalizedDevtoUpdateStr === 'true' ||
-    normalizedDevtoUpdateStr === 'yes' ||
-    normalizedDevtoUpdateStr === '1';
-  const explicitDevtoUpdateFalse =
-    rawDevtoUpdate === false ||
-    normalizedDevtoUpdateStr === 'false' ||
-    normalizedDevtoUpdateStr === 'no' ||
-    normalizedDevtoUpdateStr === '0';
-
-  const devto = baseDevto || explicitDevtoUpdateTrue;
-  const devtoUpdate = explicitDevtoUpdateFalse
-    ? false
-    : explicitDevtoUpdateTrue
-      ? true
-      : devto;
-
-  const devtoDraft =
-    rawDevtoDraft === true ||
-    (typeof rawDevtoDraft === 'string' &&
-      rawDevtoDraft.trim().toLowerCase() === 'true') ||
-    normalizedDevtoStr === 'draft';
-
-  const normalizedHashnodeStr =
-    typeof rawHashnode === 'string' ? rawHashnode.trim().toLowerCase() : '';
-  const hashnode =
-    rawHashnode === true ||
-    normalizedHashnodeStr === 'true' ||
-    normalizedHashnodeStr === 'yes' ||
-    normalizedHashnodeStr === '1' ||
-    normalizedHashnodeStr === 'draft';
-  const hashnodeDraft =
-    rawHashnodeDraft === true ||
-    (typeof rawHashnodeDraft === 'string' &&
-      rawHashnodeDraft.trim().toLowerCase() === 'true') ||
-    normalizedHashnodeStr === 'draft';
-
   const normalizedCommentsStr =
     typeof rawComments === 'string' ? rawComments.trim().toLowerCase() : '';
   const comments = !(
@@ -713,12 +616,6 @@ function parsePostFile(
     sourcePath: relSourcePath,
     githubEditUrl: `${SITE_CONFIG.repoUrl}/blob/main/${relSourcePath}`,
     isDirectoryPost,
-    devto,
-    devtoUpdate,
-    devtoDraft,
-    ...(devtoSeries ? { devtoSeries } : {}),
-    hashnode,
-    hashnodeDraft,
     comments,
   };
 }

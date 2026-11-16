@@ -1,5 +1,5 @@
 # Mahin Raza — DevOps & Cloud Engineering Blog
- 
+
 Personal engineering blog covering **AWS, Kubernetes, Observability, OpenTelemetry, Prometheus, Incident Response, and Site Reliability Engineering**, built with **Astro + Tailwind CSS** and deployed as a static site on **Cloudflare Pages** at [`https://blog.mahinraza.online`](https://blog.mahinraza.online).
 
 ---
@@ -15,11 +15,10 @@ Personal engineering blog covering **AWS, Kubernetes, Observability, OpenTelemet
 4. [Writing Content: Markdown Features](#4-writing-content-markdown-features)
 5. [Creating `social-media.png` Cover Images (3 Ways)](#5-creating-social-mediapng-cover-images-3-ways)
 6. [Categories & Automatic Tag Routing](#6-categories--automatic-tag-routing)
-7. [Cross-Posting to DEV (`dev.to`) & Hashnode](#7-cross-posting-to-dev-devto--hashnode)
-8. [Site Customization (Profile, Links, Authors)](#8-site-customization-profile-links-authors)
-9. [Project Structure](#9-project-structure)
-10. [CLI Commands & Local Development](#10-cli-commands--local-development)
-11. [Deploying to Cloudflare Pages](#11-deploying-to-cloudflare-pages)
+7. [Site Customization (Profile, Comments, Theme)](#7-site-customization-profile-comments-theme)
+8. [Project Structure](#8-project-structure)
+9. [CLI Commands & Local Development](#9-cli-commands--local-development)
+10. [Deploying to Cloudflare Pages](#10-deploying-to-cloudflare-pages)
 
 ---
 
@@ -29,13 +28,14 @@ Personal engineering blog covering **AWS, Kubernetes, Observability, OpenTelemet
 - **Instant Client-Side Search (`/` or `⌘K` / `Ctrl+K`):** Full-text search modal powered by `/search-index.json` across titles, descriptions, categories, and tags.
 - **Automatic Article Enhancements:**
   - Sticky desktop & collapsible mobile **Table of Contents** generated from `##` and `###` headings.
+  - **Last Updated Date Tracking:** Supports explicit `updated: YYYY-MM-DD` frontmatter or automatic detection from Git modification commits.
   - **Reading progress bar**, automatic **word-count reading time**, and **scroll-to-top** button.
   - **Syntax-highlighted code blocks** (Shiki `github-dark`) with language labels and one-click **Copy** buttons.
   - **Click-to-zoom image lightbox** and automatic asset syncing for folder posts.
-  - **Related Engineering Guides** recommendations scored by shared tags and category.
-- **Full SEO & Syndication:**
+  - **GitHub Discussions Comments (Giscus)** synced automatically with Light/Dark mode.
+  - **Related Blogs** recommendations scored by shared tags and category.
+- **Full SEO & Feeds:**
   - Canonical URLs, OpenGraph & Twitter/X large-image cards, JSON-LD (`BlogPosting`, `WebSite`, `BreadcrumbList`), `/sitemap-index.xml`, and `/rss.xml`.
-- **Per-Article Cross-Posting Control:** Opt-in publishing (`true`, `draft`, or `false`) to **DEV Community (`dev.to`)** and **Hashnode** via GitHub Actions, with canonical URLs pointing back to `blog.mahinraza.online`.
 - **Self-Serve Social Card Builder:** Offline browser tool ([`tools/social-card-generator.html`](./tools/social-card-generator.html)), blank PNG frame ([`social-media-image-template.png`](./social-media-image-template.png)), and CLI generator.
 
 ---
@@ -62,8 +62,6 @@ tags:
   - Autoscaling
   - Prometheus
 draft: false
-devto: true
-hashnode: false
 ---
 
 Start with a clear problem statement in your opening paragraph.
@@ -98,17 +96,17 @@ Use this whenever you want to include screenshots, architecture diagrams, or a c
 posts/2026-11-15-eks-pod-autoscaling/
 ├── README.md           # Your Markdown post (with frontmatter)
 ├── social-media.png    # Optional 1280x720 OpenGraph cover card
-├── architecture.png    # Co-located diagram
+├── architecture.svg    # Co-located diagram
 └── grafana-panel.png   # Co-located screenshot
 ```
 
 2. Reference images inside `README.md` using standard relative paths:
 
 ```markdown
-![EKS Autoscaling Architecture](./architecture.png)
+![EKS Autoscaling Architecture](./architecture.svg)
 ```
 
-At build time, `npm run sync-assets` automatically copies co-located images to `/post-assets/<slug>/` so they work both on your website and when syndicated to DEV/Hashnode.
+At build time, `npm run sync-assets` automatically copies co-located images to `/post-assets/<slug>/`.
 
 ---
 
@@ -127,13 +125,10 @@ Category: SRE & Incident Response
 
 Description: Alert on queue age, deadlines and stalled progress while distinguishing normal batch accumulation from failed consumers.
 
-DevTo: true
-Hashnode: false
-
 Start writing your article body here...
 ```
 
-All inline metadata lines (`Author:`, `Tags:`, `Category:`, `Description:`, `DevTo:`, `Hashnode:`) at the top of the file are parsed and automatically stripped before rendering HTML.
+All inline metadata lines (`Author:`, `Tags:`, `Category:`, `Description:`, `Updated:`, `Comments:`) at the top of the file are parsed and automatically stripped before rendering HTML.
 
 ---
 
@@ -149,8 +144,7 @@ git push
 
 **What happens automatically after `git push`:**
 1. **GitHub CI ([`.github/workflows/ci.yml`](./.github/workflows/ci.yml)):** Validates all posts (checks titles, dates, tags, balanced code fences, and relative image paths) and runs a test Astro build.
-2. **Cloudflare Pages:** Builds `npm run build` and deploys the updated static site, RSS feeds, search index, and sitemap to `https://blog.mahinraza.online`.
-3. **DEV & Hashnode Workflows:** Check if any post has `devto: true` or `hashnode: true` and automatically publish/update only opted-in posts.
+2. **Cloudflare Pages:** Builds `npm run build` and deploys the updated static site, RSS feed, search index, and sitemap to `https://blog.mahinraza.online`.
 
 ---
 
@@ -167,10 +161,6 @@ git push
 | `author` | Optional | `Mahin556` (`Mahin Raza`) | GitHub username or `[handle](url)` mapped via [`Authors.json`](./Authors.json). |
 | `draft` | Optional | `false` | Set `draft: true` to hide a work-in-progress post from all builds and feeds. |
 | `image` | Optional | `./social-media.png` or `/og-default.png` | Custom OpenGraph cover image path or URL (`1280x720` recommended). |
-| `devto` | Optional | `false` | `true` = publish live on `dev.to`, `draft` = save as draft on `dev.to`, `false` = skip. |
-| `devto_update` | Optional | Matches `devto` | `true` = also update on `dev.to` when edited; `false` = update blog only without overwriting `dev.to`. |
-| `devto_series` | Optional | None | Optional series title on `dev.to` (e.g. `"Kubernetes Production Series"`). |
-| `hashnode` | Optional | `false` | `true` = publish live on Hashnode, `draft` = save as draft on Hashnode, `false` = skip. |
 | `comments` | Optional | `true` | Set `comments: false` to disable the Giscus comment section on a specific post. |
 
 ---
@@ -238,53 +228,7 @@ Every post belongs to **one category**. If you omit `category:` in frontmatter, 
 
 ---
 
-## 7. Cross-Posting to DEV (`dev.to`) & Hashnode
-
-Cross-posting is **100% opt-in**. By default, articles stay exclusively on `blog.mahinraza.online`. You control DEV and Hashnode independently on both new and existing posts:
-
-| Goal | YAML Frontmatter (`---`) | Inline Header (`README.md`) |
-| :--- | :--- | :--- |
-| **Blog only (default)** | Omit both, or `devto: false` / `hashnode: false` | Omit both |
-| **Publish live to DEV (`dev.to`)** | `devto: true` | `DevTo: true` |
-| **Save as draft on DEV (`dev.to`)** | `devto: draft` | `DevTo: draft` |
-| **Publish live to Hashnode** | `hashnode: true` | `Hashnode: true` |
-| **Save as draft on Hashnode** | `hashnode: draft` | `Hashnode: draft` |
-| **Publish to BOTH platforms** | `devto: true` + `hashnode: true` | `DevTo: true` + `Hashnode: true` |
-
-### What Cross-Posting Does Automatically
-1. **Protects Your SEO:** Sets `canonical_url` (DEV) and `originalArticleURL` (Hashnode) to `https://blog.mahinraza.online/posts/<slug>/` plus a canonical footer link.
-2. **Fixes Images & Links:** Attaches your OpenGraph cover image and rewrites relative Markdown image/link paths (`./diagram.png`, `/posts/...`) to full `https://blog.mahinraza.online/...` URLs (without touching code blocks).
-3. **Prevents Duplicates:** Matches existing remote articles by canonical URL / title — skips unchanged articles and updates edited articles in place.
-
-### Updating an Existing Article (Blog Only vs. Also Update on DEV)
-
-Whenever you edit an existing post:
-- **Interactive CLI (`npm run update-post`):** Stamps `updated: YYYY-MM-DD` in your post and asks whether to also update the article on `dev.to`:
-  ```bash
-  npm run update-post
-  # Or non-interactively:
-  npm run update-post -- posts/2026-11-15-eks-pod-autoscaling --devto      # Update blog + dev.to
-  npm run update-post -- posts/2026-11-15-eks-pod-autoscaling --no-devto   # Update blog ONLY
-  ```
-- **Frontmatter Control:** Set `devto_update: true` (or `devio_update: true`) to sync updates to `dev.to`, or `devto_update: false` to keep your `dev.to` article unchanged when pushing blog edits.
-- **GitHub Actions UI:** When manually running **Publish Opted-In Posts to DEV**, you can toggle `update_existing` or `force_update`.
-
-### One-Time GitHub Secrets Setup
-
-Open your GitHub repository → **Settings → Secrets and variables → Actions → New repository secret**:
-
-| Secret Name | Required For | Where to Generate |
-| :--- | :--- | :--- |
-| `DEVTO_API_KEY` | DEV (`dev.to`) | [dev.to/settings/extensions](https://dev.to/settings/extensions) → **DEV Community API Keys** |
-| `HASHNODE_TOKEN` | Hashnode | [hashnode.com/settings/developer](https://hashnode.com/settings/developer) → **Personal Access Token** |
-| `HASHNODE_PUBLICATION_ID` | Optional | Auto-discovered if you have one Hashnode blog; set only if you manage multiple Hashnode blogs. |
-
-- **Manual Trigger / Dry Run in GitHub UI:** Go to your repo's **Actions** tab → select **Publish Opted-In Posts to DEV** or **Publish Opted-In Posts to Hashnode** → click **Run workflow** (supports `dry_run` preview and single `post_path` sync).
-- **Hashnode Free-Tier Feed:** Hashnode currently requires Hashnode Pro for GraphQL API writes. A dedicated RSS feed containing **only** `hashnode: true` posts is also generated automatically at `https://blog.mahinraza.online/rss-hashnode.xml`.
-
----
-
-## 8. Site Customization (Profile, Links, Authors, Theme)
+## 7. Site Customization (Profile, Comments, Theme)
 
 - **Site Title, Domain, Bio, Portfolio & GitHub URLs:** Edit [`src/lib/site.ts`](./src/lib/site.ts) (`SITE_CONFIG`).
 - **Author Profiles:** Edit [`Authors.json`](./Authors.json).
@@ -295,14 +239,12 @@ Open your GitHub repository → **Settings → Secrets and variables → Actions
 
 ---
 
-## 9. Project Structure
+## 8. Project Structure
 
 ```text
 .
 ├── .github/workflows/
-│   ├── ci.yml                     # Validates posts & tests Astro build on push/PR
-│   ├── publish-devto.yml          # Auto-syncs `devto: true` posts to dev.to
-│   └── publish-hashnode.yml       # Auto-syncs `hashnode: true` posts to Hashnode
+│   └── ci.yml                     # Validates posts & tests Astro build on push/PR
 ├── posts/                         # All blog articles (.md files or <slug>/README.md folders)
 ├── public/
 │   ├── favicon.svg                # Brand terminal icon
@@ -311,12 +253,12 @@ Open your GitHub repository → **Settings → Secrets and variables → Actions
 │   ├── _headers                   # Cloudflare Pages security & cache headers
 │   └── _redirects                 # Cloudflare Pages URL redirects
 ├── src/
-│   ├── components/                # Header, Footer, FeaturedPost, PostCard, SearchModal, TOC, TagPills
+│   ├── components/                # Header, Footer, FeaturedPost, PostCard, Comments, SearchModal, TOC, TagPills
 │   ├── fonts/                     # Poppins-Bold.ttf used by CLI social card generator
 │   ├── layouts/BaseLayout.astro   # Global HTML head, SEO meta, OpenGraph, JSON-LD
-│   ├── lib/                       # Post loader, Markdown/Shiki renderer, colors, site config, syndication
+│   ├── lib/                       # Post loader, Markdown/Shiki renderer, colors, site config
 │   ├── pages/                     # Home, /posts/[slug], /categories, /tags, /rss.xml, /search-index.json
-│   ├── scripts/                   # validate-blogs, sync-post-assets, generate-social-image, publish-*
+│   ├── scripts/                   # validate-blogs, sync-post-assets, generate-social-image, update-post
 │   └── styles/global.css          # Typography, code block headers, TOC rail, lightbox styles
 ├── tools/
 │   └── social-card-generator.html # Standalone offline browser tool to build social-media.png cards
@@ -327,9 +269,9 @@ Open your GitHub repository → **Settings → Secrets and variables → Actions
 
 ---
 
-## 10. CLI Commands & Local Development
+## 9. CLI Commands & Local Development
 
-Requires **Node.js 20+** when running locally (copy [`.env.example`](./.env.example) to `.env` if running syndication scripts locally).
+Requires **Node.js 20+** when running locally.
 
 ```bash
 # Install dependencies
@@ -347,24 +289,16 @@ npm run build
 # Preview production build locally
 npm run preview
 
-# Generate OpenGraph social-media.png cards for folder posts
-npm run generate-social-image
-
-# Stamp "Last updated" date on a post & choose whether to sync edits to DEV (dev.to)
+# Stamp or update `updated: YYYY-MM-DD` on an existing blog post
 npm run update-post
 
-# Preview or publish opted-in posts to DEV (dev.to)
-npm run publish:devto:dry
-npm run publish:devto
-
-# Preview or publish opted-in posts to Hashnode
-npm run publish:hashnode:dry
-npm run publish:hashnode
+# Generate OpenGraph social-media.png cards for folder posts
+npm run generate-social-image
 ```
 
 ---
 
-## 11. Deploying to Cloudflare Pages
+## 10. Deploying to Cloudflare Pages
 
 1. Sign in to the [Cloudflare Dashboard](https://dash.cloudflare.com/) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
 2. Select the `Mahin556/blog.mahinraza.online` GitHub repository.
