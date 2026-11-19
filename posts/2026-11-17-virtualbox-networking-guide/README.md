@@ -1,3 +1,7 @@
+---
+draft: true
+---
+
 # VirtualBox Networking: Complete Guide
 
 ## 1. Modes at a glance
