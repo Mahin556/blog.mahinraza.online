@@ -1,0 +1,1061 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Architecture &amp; Workflow Diagram Builder — blog.mahinraza.online</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+        background: #f8fafc;
+        color: #0f172a;
+        padding: 18px;
+      }
+      .top-nav {
+        max-width: 1480px;
+        margin: 0 auto 16px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 10px 16px;
+        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+      }
+      .brand-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 600;
+        color: #0f766e;
+      }
+      .brand-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: #0f172a;
+        color: #2dd4bf;
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .tool-links { display: flex; gap: 8px; flex-wrap: wrap; }
+      .tool-link {
+        text-decoration: none;
+        font-size: 12.5px;
+        font-weight: 600;
+        padding: 7px 12px;
+        border-radius: 8px;
+        color: #475569;
+        border: 1px solid transparent;
+        transition: all 0.15s;
+      }
+      .tool-link:hover { background: #f1f5f9; color: #0f172a; }
+      .tool-link.active { background: #f0fdfa; color: #0f766e; border-color: #99f6e4; }
+
+      .workspace {
+        max-width: 1480px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 475px minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+      }
+      @media (max-width: 1100px) { .workspace { grid-template-columns: 1fr; } }
+
+      .sidebar {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+        max-height: calc(100vh - 96px);
+        overflow-y: auto;
+      }
+      @media (max-width: 1100px) { .sidebar { max-height: none; } }
+
+      .preview-pane { position: sticky; top: 18px; display: flex; flex-direction: column; gap: 14px; }
+      .card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+      }
+
+      h1 { margin: 0 0 4px; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+      p.sub { margin: 0 0 14px; font-size: 12.5px; color: #64748b; line-height: 1.48; }
+
+      .section-title {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #0f766e;
+        margin: 16px 0 8px;
+        padding-top: 12px;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .mode-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+      .mode-tab {
+        padding: 7px 9px;
+        border-radius: 7px;
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        color: #334155;
+        font-family: inherit;
+        font-size: 11.5px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: left;
+        transition: all 0.12s;
+      }
+      .mode-tab:hover { border-color: #94a3b8; background: #ffffff; }
+      .mode-tab.active { background: #0f766e; border-color: #0f766e; color: #ffffff; }
+
+      label { display: block; font-size: 11.5px; font-weight: 600; color: #334155; margin-bottom: 3px; }
+      input[type="text"], textarea, select {
+        width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 7px;
+        padding: 7px 9px;
+        font-family: inherit;
+        font-size: 12.5px;
+        color: #0f172a;
+        background: #f8fafc;
+        margin-bottom: 9px;
+      }
+      input[type="text"]:focus, textarea:focus, select:focus {
+        outline: none;
+        border-color: #0d9488;
+        background: #ffffff;
+      }
+      textarea { min-height: 58px; resize: vertical; line-height: 1.4; }
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+
+      .item-box {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 9px;
+        padding: 10px;
+        margin-bottom: 9px;
+      }
+      .item-box-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 7px;
+      }
+      .item-badge {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #0f766e;
+        background: #ccfbf1;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .mini-actions { display: flex; gap: 4px; }
+      .icon-btn {
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #475569;
+        border-radius: 5px;
+        padding: 2px 6px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .icon-btn:hover { border-color: #0d9488; color: #0f766e; }
+      .icon-btn.danger:hover { border-color: #ef4444; color: #dc2626; }
+
+      .add-btn {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px dashed #0d9488;
+        background: #f0fdfa;
+        color: #0f766e;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 8px;
+      }
+      .add-btn:hover { background: #ccfbf1; }
+
+      .side-switch { display: flex; gap: 6px; margin-bottom: 10px; }
+      .side-btn {
+        flex: 1;
+        padding: 6px 8px;
+        border-radius: 7px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #475569;
+        cursor: pointer;
+      }
+      .side-btn.active { background: #f0fdfa; border-color: #0d9488; color: #0f766e; }
+
+      .preview-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .preview-meta { font-family: "JetBrains Mono", monospace; font-size: 12px; color: #64748b; }
+      .svg-stage {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: #f1f5f9;
+        padding: 12px;
+      }
+      .svg-stage svg { width: 100%; height: auto; display: block; border-radius: 10px; }
+
+      .export-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; }
+      .export-field { flex: 1 1 200px; }
+      .export-field input { margin-bottom: 0; }
+      .btn-primary, .btn-secondary {
+        border: none;
+        border-radius: 8px;
+        padding: 9px 14px;
+        font-family: inherit;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn-primary { background: #0f172a; color: #ffffff; }
+      .btn-primary:hover { background: #0f766e; }
+      .btn-secondary { background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; }
+      .btn-secondary:hover { border-color: #0d9488; color: #0f766e; background: #f0fdfa; }
+
+      .md-snippet {
+        margin-top: 12px;
+        background: #0f172a;
+        color: #5eead4;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        overflow-x: auto;
+      }
+      .copy-pill {
+        background: #1e293b;
+        color: #f8fafc;
+        border: 1px solid #334155;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        cursor: pointer;
+      }
+      .copy-pill:hover { border-color: #14b8a6; color: #5eead4; }
+    </style>
+  </head>
+  <body>
+    <nav class="top-nav">
+      <div class="brand-pill">
+        <span class="brand-icon">&gt;_</span>
+        <span>blog.mahinraza.online // visual-studio</span>
+      </div>
+      <div class="tool-links">
+        <a class="tool-link" href="./social-card-generator.html">1. Social Cover Card (1280&times;720)</a>
+        <a class="tool-link active" href="./diagram-generator.html">2. Architecture &amp; Workflow Studio (12 Layouts &middot; 25 Templates)</a>
+      </div>
+    </nav>
+
+    <div class="workspace">
+      <!-- LEFT CONTROLS -->
+      <aside class="sidebar">
+        <h1>Engineering Diagram Studio</h1>
+        <p class="sub">
+          Choose from <strong>12 diagram layouts</strong> or <strong>25 DevOps/Cloud/SRE templates</strong>,
+          edit labels in plain English, and download crisp <code>.svg</code> or <code>2x .png</code> files.
+        </p>
+
+        <label for="presetSelect">Load Starter Template (25 Built-In Presets)</label>
+        <select id="presetSelect"></select>
+
+        <div class="section-title"><span>1. Select Layout Engine (12 Modes)</span></div>
+        <div class="mode-tabs" id="modeTabs">
+          <button type="button" class="mode-tab" data-mode="pipeline">1. Step Pipeline</button>
+          <button type="button" class="mode-tab" data-mode="differential">2. Differential (2-6 Topics)</button>
+          <button type="button" class="mode-tab" data-mode="comparison">3. 2-Way Stack (A vs B)</button>
+          <button type="button" class="mode-tab" data-mode="threeway">4. 3-Way Stack (A/B/C)</button>
+          <button type="button" class="mode-tab" data-mode="stack">5. Cluster / Node Stack</button>
+          <button type="button" class="mode-tab" data-mode="hub">6. 3-Column Hub Flow</button>
+          <button type="button" class="mode-tab" data-mode="sequence">7. Sequence Call Flow</button>
+          <button type="button" class="mode-tab" data-mode="tree">8. Routing / Tree</button>
+          <button type="button" class="mode-tab" data-mode="timeline">9. Incident Timeline</button>
+          <button type="button" class="mode-tab" data-mode="decision">10. Decision Runbook</button>
+          <button type="button" class="mode-tab" data-mode="boundary">11. Cloud VPC / Zones</button>
+          <button type="button" class="mode-tab" data-mode="mermaid">12. Live Mermaid Code</button>
+        </div>
+
+        <div id="headerFieldsWrap">
+          <div class="section-title"><span>2. Diagram Header</span></div>
+          <div class="grid-2">
+            <div>
+              <label for="kickerInput">Top Kicker</label>
+              <input id="kickerInput" type="text" />
+            </div>
+            <div>
+              <label for="badgeInput">Top-Right Badge</label>
+              <input id="badgeInput" type="text" placeholder="Optional badge" />
+            </div>
+          </div>
+          <label for="mainTitleInput">Diagram Title</label>
+          <input id="mainTitleInput" type="text" />
+        </div>
+
+        <div id="dynamicControls"></div>
+      </aside>
+
+      <!-- RIGHT LIVE PREVIEW -->
+      <main class="preview-pane">
+        <div class="card">
+          <div class="preview-header">
+            <span class="preview-meta" id="dimensionsLabel">Live Vector Preview</span>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap">
+              <button type="button" id="resetBtn" class="btn-secondary" style="padding: 6px 10px; font-size: 11.5px">Reset Default</button>
+              <button type="button" id="saveJsonBtn" class="btn-secondary" style="padding: 6px 10px; font-size: 11.5px">Save .json</button>
+              <button type="button" id="loadJsonBtn" class="btn-secondary" style="padding: 6px 10px; font-size: 11.5px">Load .json</button>
+              <input id="jsonFileInput" type="file" accept=".json" style="display: none" />
+            </div>
+          </div>
+
+          <div class="svg-stage" id="svgStage"></div>
+
+          <div style="margin-top: 16px" class="export-bar">
+            <div class="export-field">
+              <label for="fileNameInput">Output Filename</label>
+              <input id="fileNameInput" type="text" value="architecture-diagram" />
+            </div>
+            <button type="button" id="downloadSvgBtn" class="btn-primary">Download .svg (Recommended)</button>
+            <button type="button" id="downloadPngBtn" class="btn-secondary">Download 2x .png</button>
+          </div>
+
+          <div class="md-snippet">
+            <span id="markdownPreview">![Diagram](./architecture-diagram.svg)</span>
+            <button type="button" id="copyMdBtn" class="copy-pill">Copy Markdown</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="./diagram-presets.js"></script>
+    <script src="./diagram-renderers.js"></script>
+    <script>
+      const STORAGE_KEY = 'mahin_blog_diagram_studio_v2';
+      const PRESETS = window.DIAGRAM_PRESETS;
+      const RENDERERS = window.DIAGRAM_RENDERERS;
+      const escAttr = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const escXml = RENDERERS.escXml;
+
+      const DEFAULT_FOR_MODE = {
+        pipeline: 'pipeline-vagrant',
+        comparison: 'compare-hypervisors',
+        threeway: 'threeway-compute',
+        stack: 'stack-k8s',
+        hub: 'hub-otel',
+        sequence: 'sequence-oauth',
+        tree: 'tree-alertmanager',
+        timeline: 'timeline-incident',
+        decision: 'decision-pod',
+        boundary: 'boundary-vpc-efs',
+        differential: 'diff-4-vagrant-net'
+      };
+
+      const DEFAULT_MERMAID = `flowchart LR
+  A["Vagrantfile (Ruby DSL)"] -->|vagrant up| B["VirtualBox / KVM Provider"]
+  B --> C["Guest VM 1: Control Plane"]
+  B --> D["Guest VM 2: Worker Node"]
+  C <-->|192.168.56.0/24| D`;
+
+      let state = JSON.parse(JSON.stringify(PRESETS['pipeline-vagrant']));
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.mode) state = parsed;
+        }
+      } catch (_) {}
+
+      let activeCompareSide = 'left';
+      let activeColIdx = 0;
+      let mermaidModPromise = null;
+
+      // Populate Grouped Preset Selector
+      const presetSelect = document.getElementById('presetSelect');
+      (function populatePresets() {
+        let html = '<option value="">-- Choose from 25 ready-to-edit engineering templates --</option>';
+        const groups = {};
+        Object.keys(PRESETS).forEach((k) => {
+          const g = PRESETS[k].group || 'Other';
+          if (!groups[g]) groups[g] = [];
+          groups[g].push({ key: k, label: PRESETS[k].label });
+        });
+        Object.keys(groups).forEach((gName) => {
+          html += `<optgroup label="${escAttr(gName)}">`;
+          groups[gName].forEach((item) => {
+            html += `<option value="${escAttr(item.key)}">${escXml(item.label)}</option>`;
+          });
+          html += `</optgroup>`;
+        });
+        presetSelect.innerHTML = html;
+      })();
+
+      const modeTabs = document.querySelectorAll('.mode-tab');
+      const headerFieldsWrap = document.getElementById('headerFieldsWrap');
+      const kickerInput = document.getElementById('kickerInput');
+      const badgeInput = document.getElementById('badgeInput');
+      const mainTitleInput = document.getElementById('mainTitleInput');
+      const dynamicControls = document.getElementById('dynamicControls');
+      const svgStage = document.getElementById('svgStage');
+      const dimensionsLabel = document.getElementById('dimensionsLabel');
+      const fileNameInput = document.getElementById('fileNameInput');
+      const markdownPreview = document.getElementById('markdownPreview');
+
+      function ensureModeFields(mode) {
+        if (mode === 'mermaid') {
+          if (!state.mermaidCode) state.mermaidCode = DEFAULT_MERMAID;
+          if (!state.title) state.title = 'Custom Architecture Flowchart';
+          return;
+        }
+        const checkMap = {
+          pipeline: () => Array.isArray(state.steps),
+          comparison: () => state.left && state.right,
+          threeway: () => Array.isArray(state.columns),
+          stack: () => Array.isArray(state.nodes) && Array.isArray(state.layers),
+          hub: () => Array.isArray(state.leftCards) && Array.isArray(state.rightCards),
+          sequence: () => Array.isArray(state.actors) && Array.isArray(state.messages),
+          tree: () => state.root && Array.isArray(state.branches),
+          timeline: () => Array.isArray(state.events),
+          decision: () => Array.isArray(state.checks),
+          boundary: () => Array.isArray(state.zones),
+          differential: () => Array.isArray(state.topics) && Array.isArray(state.rows)
+        };
+        if (!checkMap[mode] || !checkMap[mode]()) {
+          const fallback = JSON.parse(JSON.stringify(PRESETS[DEFAULT_FOR_MODE[mode] || 'pipeline-vagrant']));
+          Object.assign(state, fallback, { mode });
+        }
+      }
+
+      function themeOptions(val, list) {
+        const labels = {
+          default: 'Default Slate',
+          teal: 'Teal Accent',
+          sky: 'Sky Blue',
+          violet: 'Violet Accent',
+          amber: 'Amber Highlight',
+          slate: 'Neutral Slate',
+          notice: 'Mint Notice Strip',
+          dark: 'Dark Slate / Hardware'
+        };
+        return list.map((k) => `<option value="${k}" ${val === k ? 'selected' : ''}>${labels[k] || k}</option>`).join('');
+      }
+
+      function moveBtns(prefix, idx, allowDel) {
+        return `<div class="mini-actions">
+          <button type="button" class="icon-btn" data-act="move-${prefix}" data-idx="${idx}" data-dir="-1">&uarr;</button>
+          <button type="button" class="icon-btn" data-act="move-${prefix}" data-idx="${idx}" data-dir="1">&darr;</button>
+          ${allowDel ? `<button type="button" class="icon-btn danger" data-act="del-${prefix}" data-idx="${idx}">&times;</button>` : ''}
+        </div>`;
+      }
+
+      function renderControls() {
+        ensureModeFields(state.mode);
+        headerFieldsWrap.style.display = state.mode === 'mermaid' ? 'none' : 'block';
+        kickerInput.value = state.kicker || '';
+        badgeInput.value = state.badge || '';
+        mainTitleInput.value = state.title || '';
+        fileNameInput.value = state.fileName || 'architecture-diagram';
+        modeTabs.forEach((b) => b.classList.toggle('active', b.dataset.mode === state.mode));
+
+        const m = state.mode;
+        let h = '';
+
+        if (m === 'pipeline') {
+          h += `<div class="section-title"><span>3. Pipeline Steps (${state.steps.length})</span></div>
+            <label>Columns Per Row</label>
+            <select data-field="pipelineCols">
+              <option value="2" ${Number(state.pipelineCols) === 2 ? 'selected' : ''}>2 Columns per row</option>
+              <option value="3" ${Number(state.pipelineCols || 3) === 3 ? 'selected' : ''}>3 Columns per row</option>
+              <option value="4" ${Number(state.pipelineCols) === 4 ? 'selected' : ''}>4 Columns per row</option>
+            </select>`;
+          state.steps.forEach((s, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Step #${i + 1}</span>${moveBtns('steps', i, state.steps.length > 1)}</div>
+              <div class="grid-2">
+                <div><label>Badge</label><input type="text" data-arr="steps" data-idx="${i}" data-key="badge" value="${escAttr(s.badge)}"/></div>
+                <div><label>Theme</label><select data-arr="steps" data-idx="${i}" data-key="theme">${themeOptions(s.theme, ['default', 'teal', 'sky', 'amber'])}</select></div>
+              </div>
+              <label>Title</label><input type="text" data-arr="steps" data-idx="${i}" data-key="title" value="${escAttr(s.title)}"/>
+              <label>Description</label><textarea data-arr="steps" data-idx="${i}" data-key="desc">${escXml(s.desc)}</textarea>
+              <label>Bottom Code Pill</label><input type="text" data-arr="steps" data-idx="${i}" data-key="code" value="${escAttr(s.code)}"/>
+            </div>`;
+          });
+          h += `<button type="button" class="add-btn" data-act="add-steps">+ Add Pipeline Step</button>`;
+        } else if (m === 'comparison') {
+          const side = state[activeCompareSide];
+          h += `<div class="section-title"><span>3. Side-by-Side Panels</span></div>
+            <div class="side-switch">
+              <button type="button" class="side-btn ${activeCompareSide === 'left' ? 'active' : ''}" data-side="left">Left Card</button>
+              <button type="button" class="side-btn ${activeCompareSide === 'right' ? 'active' : ''}" data-side="right">Right Card</button>
+            </div>
+            <label>Card Title</label><input type="text" data-side-field="title" value="${escAttr(side.title)}"/>
+            <div class="grid-2">
+              <div><label>Status Pill</label><input type="text" data-side-field="pill" value="${escAttr(side.pill)}"/></div>
+              <div><label>Theme</label><select data-side-field="theme">${themeOptions(side.theme, ['teal', 'sky', 'slate', 'amber'])}</select></div>
+            </div>
+            <label>Footer Takeaway</label><input type="text" data-side-field="footer" value="${escAttr(side.footer)}"/>
+            <div class="section-title"><span>Top Workload Boxes (${side.nodes.length})</span></div>`;
+          side.nodes.forEach((nd, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Box #${i + 1}</span><button type="button" class="icon-btn danger" data-act="del-comp-node" data-idx="${i}">&times;</button></div>
+              <input type="text" placeholder="Header" data-comp-arr="nodes" data-idx="${i}" data-key="name" value="${escAttr(nd.name)}"/>
+              <div class="grid-2">
+                <input type="text" placeholder="Top badge" data-comp-arr="nodes" data-idx="${i}" data-key="top" value="${escAttr(nd.top)}"/>
+                <input type="text" placeholder="Bottom badge" data-comp-arr="nodes" data-idx="${i}" data-key="bottom" value="${escAttr(nd.bottom)}"/>
+              </div></div>`;
+          });
+          if (side.nodes.length < 3) h += `<button type="button" class="add-btn" data-act="add-comp-node">+ Add Workload Box</button>`;
+          h += `<div class="section-title"><span>Stacked Layers (${side.layers.length})</span></div>`;
+          side.layers.forEach((ly, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Layer #${i + 1}</span>${moveBtns('comp-layer', i, side.layers.length > 1)}</div>
+              <input type="text" placeholder="Layer title" data-comp-arr="layers" data-idx="${i}" data-key="title" value="${escAttr(ly.title)}"/>
+              <input type="text" placeholder="Subtitle / tech" data-comp-arr="layers" data-idx="${i}" data-key="sub" value="${escAttr(ly.sub)}"/>
+              <select data-comp-arr="layers" data-idx="${i}" data-key="style">${themeOptions(ly.style, ['teal', 'sky', 'notice', 'slate', 'amber', 'dark'])}</select>
+            </div>`;
+          });
+          h += `<button type="button" class="add-btn" data-act="add-comp-layer">+ Add Stacked Layer</button>`;
+        } else if (m === 'threeway') {
+          const col = state.columns[activeColIdx] || state.columns[0];
+          h += `<div class="section-title"><span>3. Edit 3-Way Columns</span></div>
+            <div class="side-switch">
+              ${[0, 1, 2].map((i) => `<button type="button" class="side-btn ${activeColIdx === i ? 'active' : ''}" data-col="${i}">Column #${i + 1}</button>`).join('')}
+            </div>
+            <label>Column Heading</label><input type="text" data-arr="columns" data-idx="${activeColIdx}" data-key="title" value="${escAttr(col.title)}"/>
+            <div class="grid-2">
+              <div><label>Subtitle Pill</label><input type="text" data-arr="columns" data-idx="${activeColIdx}" data-key="pill" value="${escAttr(col.pill)}"/></div>
+              <div><label>Theme</label><select data-arr="columns" data-idx="${activeColIdx}" data-key="theme">${themeOptions(col.theme, ['teal', 'sky', 'slate', 'amber'])}</select></div>
+            </div>
+            <label>Stack Rows / Characteristics (1 per line)</label>
+            <textarea data-arr="columns" data-idx="${activeColIdx}" data-key="items">${escXml(col.items)}</textarea>
+            <label>Key Metric Highlight Bar</label><input type="text" data-arr="columns" data-idx="${activeColIdx}" data-key="metric" value="${escAttr(col.metric)}"/>
+            <label>Bottom Takeaway</label><input type="text" data-arr="columns" data-idx="${activeColIdx}" data-key="footer" value="${escAttr(col.footer)}"/>`;
+        } else if (m === 'stack') {
+          h += `<div class="section-title"><span>3. Top Cluster Nodes (${state.nodes.length})</span></div>`;
+          state.nodes.forEach((nd, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Node #${i + 1}</span>${moveBtns('nodes', i, state.nodes.length > 1)}</div>
+              <div class="grid-2">
+                <div><label>Header</label><input type="text" data-arr="nodes" data-idx="${i}" data-key="name" value="${escAttr(nd.name)}"/></div>
+                <div><label>Color</label><select data-arr="nodes" data-idx="${i}" data-key="theme">${themeOptions(nd.theme, ['teal', 'sky', 'dark'])}</select></div>
+              </div>
+              <label>Component Pills (1 per line)</label><textarea data-arr="nodes" data-idx="${i}" data-key="pills">${escXml(nd.pills)}</textarea>
+              <label>Specs Footer</label><input type="text" data-arr="nodes" data-idx="${i}" data-key="spec" value="${escAttr(nd.spec)}"/></div>`;
+          });
+          if (state.nodes.length < 4) h += `<button type="button" class="add-btn" data-act="add-nodes">+ Add Top Node (Max 4)</button>`;
+          h += `<div class="section-title"><span>4. Shared Foundation Layers (${state.layers.length})</span></div>`;
+          state.layers.forEach((ly, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Layer #${i + 1}</span>${moveBtns('layers', i, true)}</div>
+              <input type="text" placeholder="Layer title" data-arr="layers" data-idx="${i}" data-key="title" value="${escAttr(ly.title)}"/>
+              <input type="text" placeholder="Subtitle" data-arr="layers" data-idx="${i}" data-key="sub" value="${escAttr(ly.sub)}"/>
+              <select data-arr="layers" data-idx="${i}" data-key="style">${themeOptions(ly.style, ['notice', 'teal', 'sky', 'slate', 'dark'])}</select></div>`;
+          });
+          h += `<button type="button" class="add-btn" data-act="add-layers">+ Add Shared Layer</button>`;
+        } else if (m === 'hub') {
+          h += `<div class="section-title"><span>3. Center Hub / Gateway</span></div>
+            <label>Hub Title</label><input type="text" data-field="centerTitle" value="${escAttr(state.centerTitle)}"/>
+            <label>Hub Description</label><textarea data-field="centerSub">${escXml(state.centerSub)}</textarea>
+            <label>Hub Code Tag</label><input type="text" data-field="centerCode" value="${escAttr(state.centerCode)}"/>
+            <div class="grid-2">
+              <div><label>Left Arrow Pill</label><input type="text" data-field="leftArrow" value="${escAttr(state.leftArrow)}"/></div>
+              <div><label>Right Arrow Pill</label><input type="text" data-field="rightArrow" value="${escAttr(state.rightArrow)}"/></div>
+            </div>
+            <div class="section-title"><span>4. Left Sources (${state.leftCards.length})</span></div>
+            <input type="text" placeholder="Left heading" data-field="leftHeader" value="${escAttr(state.leftHeader)}"/>`;
+          state.leftCards.forEach((c, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Source #${i + 1}</span>${moveBtns('leftCards', i, state.leftCards.length > 1)}</div>
+              <input type="text" placeholder="Title" data-arr="leftCards" data-idx="${i}" data-key="title" value="${escAttr(c.title)}"/>
+              <input type="text" placeholder="Subtitle" data-arr="leftCards" data-idx="${i}" data-key="sub" value="${escAttr(c.sub)}"/>
+              <input type="text" placeholder="Code pill" data-arr="leftCards" data-idx="${i}" data-key="code" value="${escAttr(c.code)}"/></div>`;
+          });
+          if (state.leftCards.length < 4) h += `<button type="button" class="add-btn" data-act="add-leftCards">+ Add Left Source</button>`;
+          h += `<div class="section-title"><span>5. Right Targets (${state.rightCards.length})</span></div>
+            <input type="text" placeholder="Right heading" data-field="rightHeader" value="${escAttr(state.rightHeader)}"/>`;
+          state.rightCards.forEach((c, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Target #${i + 1}</span>${moveBtns('rightCards', i, state.rightCards.length > 1)}</div>
+              <input type="text" placeholder="Title" data-arr="rightCards" data-idx="${i}" data-key="title" value="${escAttr(c.title)}"/>
+              <input type="text" placeholder="Subtitle" data-arr="rightCards" data-idx="${i}" data-key="sub" value="${escAttr(c.sub)}"/>
+              <input type="text" placeholder="Code pill" data-arr="rightCards" data-idx="${i}" data-key="code" value="${escAttr(c.code)}"/></div>`;
+          });
+          if (state.rightCards.length < 4) h += `<button type="button" class="add-btn" data-act="add-rightCards">+ Add Right Target</button>`;
+        } else if (m === 'sequence') {
+          h += `<div class="section-title"><span>3. Actors / Lifelines (2 to 5)</span></div>
+            <label>Comma-Separated Participants</label>
+            <input type="text" data-actors="true" value="${escAttr(state.actors.join(', '))}"/>
+            <div class="section-title"><span>4. Call / Response Arrows (${state.messages.length})</span></div>`;
+          const actorOpts = (sel) => state.actors.map((a, idx) => `<option value="${idx}" ${Number(sel) === idx ? 'selected' : ''}>${escXml(a)}</option>`).join('');
+          state.messages.forEach((msg, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Call #${i + 1}</span>${moveBtns('messages', i, state.messages.length > 1)}</div>
+              <div class="grid-3">
+                <div><label>From</label><select data-arr="messages" data-idx="${i}" data-key="from">${actorOpts(msg.from)}</select></div>
+                <div><label>To</label><select data-arr="messages" data-idx="${i}" data-key="to">${actorOpts(msg.to)}</select></div>
+                <div><label>Style</label><select data-arr="messages" data-idx="${i}" data-key="dashed">
+                  <option value="false" ${!msg.dashed ? 'selected' : ''}>Solid Req</option>
+                  <option value="true" ${msg.dashed ? 'selected' : ''}>Dashed Resp</option>
+                </select></div>
+              </div>
+              <label>Message / Endpoint Label</label><input type="text" data-arr="messages" data-idx="${i}" data-key="label" value="${escAttr(msg.label)}"/>
+              <label>Sub-note / Header / Latency</label><input type="text" data-arr="messages" data-idx="${i}" data-key="code" value="${escAttr(msg.code)}"/></div>`;
+          });
+          h += `<button type="button" class="add-btn" data-act="add-messages">+ Add Sequence Arrow</button>`;
+        } else if (m === 'tree') {
+          h += `<div class="section-title"><span>3. Root Node</span></div>
+            <label>Root Title</label><input type="text" data-root="title" value="${escAttr(state.root.title)}"/>
+            <label>Root Subtitle</label><input type="text" data-root="sub" value="${escAttr(state.root.sub)}"/>
+            <label>Root Code Tag</label><input type="text" data-root="code" value="${escAttr(state.root.code)}"/>
+            <div class="section-title"><span>4. Child Branches (${state.branches.length})</span></div>`;
+          state.branches.forEach((b, i) => {
+            const leafText = Array.isArray(b.leaves) ? b.leaves.join('\n') : b.leaves;
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Branch #${i + 1}</span>${moveBtns('branches', i, state.branches.length > 1)}</div>
+              <div class="grid-2">
+                <div><label>Branch Match / Title</label><input type="text" data-arr="branches" data-idx="${i}" data-key="title" value="${escAttr(b.title)}"/></div>
+                <div><label>Color</label><select data-arr="branches" data-idx="${i}" data-key="theme">${themeOptions(b.theme, ['teal', 'sky', 'amber', 'slate'])}</select></div>
+              </div>
+              <label>Subtitle</label><input type="text" data-arr="branches" data-idx="${i}" data-key="sub" value="${escAttr(b.sub)}"/>
+              <label>Leaf Targets (1 per line)</label><textarea data-arr="branches" data-idx="${i}" data-key="leaves">${escXml(leafText)}</textarea></div>`;
+          });
+          if (state.branches.length < 4) h += `<button type="button" class="add-btn" data-act="add-branches">+ Add Branch (Max 4)</button>`;
+        } else if (m === 'timeline') {
+          h += `<div class="section-title"><span>3. Chronological Events (${state.events.length})</span></div>`;
+          state.events.forEach((ev, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Event #${i + 1}</span>${moveBtns('events', i, state.events.length > 1)}</div>
+              <div class="grid-3">
+                <div><label>Timestamp</label><input type="text" data-arr="events" data-idx="${i}" data-key="time" value="${escAttr(ev.time)}"/></div>
+                <div><label>Phase Pill</label><input type="text" data-arr="events" data-idx="${i}" data-key="badge" value="${escAttr(ev.badge)}"/></div>
+                <div><label>Color</label><select data-arr="events" data-idx="${i}" data-key="theme">${themeOptions(ev.theme, ['teal', 'sky', 'amber', 'slate'])}</select></div>
+              </div>
+              <label>Event Headline</label><input type="text" data-arr="events" data-idx="${i}" data-key="title" value="${escAttr(ev.title)}"/>
+              <label>Details</label><input type="text" data-arr="events" data-idx="${i}" data-key="desc" value="${escAttr(ev.desc)}"/>
+              <label>Command / Metric Evidence</label><input type="text" data-arr="events" data-idx="${i}" data-key="code" value="${escAttr(ev.code)}"/></div>`;
+          });
+          h += `<button type="button" class="add-btn" data-act="add-events">+ Add Timeline Event</button>`;
+        } else if (m === 'decision') {
+          h += `<div class="section-title"><span>3. Trigger &amp; Checks (${state.checks.length})</span></div>
+            <label>Initial Alert / Symptom Trigger</label><input type="text" data-field="trigger" value="${escAttr(state.trigger)}"/>`;
+          state.checks.forEach((chk, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Check #${i + 1}</span>${moveBtns('checks', i, state.checks.length > 1)}</div>
+              <label>Condition Question</label><input type="text" data-arr="checks" data-idx="${i}" data-key="condition" value="${escAttr(chk.condition)}"/>
+              <label>If YES -> Action Headline</label><input type="text" data-arr="checks" data-idx="${i}" data-key="yesTitle" value="${escAttr(chk.yesTitle)}"/>
+              <label>If YES -> Explanation</label><textarea data-arr="checks" data-idx="${i}" data-key="yesDesc">${escXml(chk.yesDesc)}</textarea>
+              <div class="grid-2">
+                <div><label>YES Command</label><input type="text" data-arr="checks" data-idx="${i}" data-key="yesCode" value="${escAttr(chk.yesCode)}"/></div>
+                <div><label>If NO Label</label><input type="text" data-arr="checks" data-idx="${i}" data-key="noLabel" value="${escAttr(chk.noLabel)}"/></div>
+              </div></div>`;
+          });
+          h += `<button type="button" class="add-btn" data-act="add-checks">+ Add Decision Check</button>
+            <label>Final Fallback / Escalation Banner</label><input type="text" data-field="finalBox" value="${escAttr(state.finalBox)}"/>`;
+        } else if (m === 'boundary') {
+          h += `<div class="section-title"><span>3. Outer Perimeter &amp; Trust Zones (${state.zones.length})</span></div>
+            <label>Outer VPC / Cloud Perimeter Label</label><input type="text" data-field="outerLabel" value="${escAttr(state.outerLabel)}"/>`;
+          state.zones.forEach((z, i) => {
+            h += `<div class="item-box"><div class="item-box-header"><span class="item-badge">Zone #${i + 1}</span>${moveBtns('zones', i, state.zones.length > 1)}</div>
+              <div class="grid-2">
+                <div><label>Zone Name</label><input type="text" data-arr="zones" data-idx="${i}" data-key="name" value="${escAttr(z.name)}"/></div>
+                <div><label>Theme</label><select data-arr="zones" data-idx="${i}" data-key="theme">${themeOptions(z.theme, ['teal', 'sky', 'amber', 'slate'])}</select></div>
+              </div>
+              <label>CIDR / Subtitle</label><input type="text" data-arr="zones" data-idx="${i}" data-key="cidr" value="${escAttr(z.cidr)}"/>
+              <label>Resources Inside Zone (1 per line)</label><textarea data-arr="zones" data-idx="${i}" data-key="items">${escXml(z.items)}</textarea></div>`;
+          });
+          if (state.zones.length < 4) h += `<button type="button" class="add-btn" data-act="add-zones">+ Add Security / Subnet Zone (Max 4)</button>`;
+          h += `<label>Bottom Security / Architecture Rule</label><input type="text" data-field="bottomNote" value="${escAttr(state.bottomNote)}"/>`;
+        } else if (m === 'differential') {
+          const topics = state.topics || [];
+          const rows = state.rows || [];
+          h += `<div class="section-title"><span>3. Differential Layout Style</span></div>
+            <div class="grid-2">
+              <div>
+                <label>Visual Style</label>
+                <select data-field="diffStyle">
+                  <option value="matrix" ${(state.diffStyle || 'matrix') === 'matrix' ? 'selected' : ''}>Matrix Table (Row-Aligned)</option>
+                  <option value="cards" ${state.diffStyle === 'cards' ? 'selected' : ''}>Side-by-Side Topic Cards</option>
+                </select>
+              </div>
+              <div>
+                <label>Criteria Column Label</label>
+                <input type="text" data-field="criteriaHeader" placeholder="Dimension" value="${escAttr(state.criteriaHeader || 'Dimension')}"/>
+              </div>
+            </div>
+            <div class="section-title"><span>4. Topics to Differentiate (${topics.length} of 6)</span></div>`;
+          topics.forEach((tp, ti) => {
+            h += `<div class="item-box">
+              <div class="item-box-header"><span class="item-badge">Topic #${ti + 1}</span>${moveBtns('diff-topic', ti, topics.length > 2)}</div>
+              <div class="grid-2">
+                <div><label>Topic Name</label><input type="text" data-arr="topics" data-idx="${ti}" data-key="name" value="${escAttr(tp.name)}"/></div>
+                <div><label>Theme Accent</label><select data-arr="topics" data-idx="${ti}" data-key="theme">${themeOptions(tp.theme || 'teal', ['teal', 'sky', 'violet', 'amber', 'slate'])}</select></div>
+              </div>
+              <div class="grid-2">
+                <div><label>Subtitle / Tag Pill</label><input type="text" data-arr="topics" data-idx="${ti}" data-key="badge" value="${escAttr(tp.badge)}"/></div>
+                <div><label>"Best For" Verdict</label><input type="text" data-arr="topics" data-idx="${ti}" data-key="verdict" value="${escAttr(tp.verdict)}"/></div>
+              </div>
+            </div>`;
+          });
+          if (topics.length < 6) {
+            h += `<button type="button" class="add-btn" data-act="add-diff-topic">+ Add Topic Column (${topics.length}/6 — Compare 2 to 6 Topics)</button>`;
+          }
+          h += `<div class="section-title"><span>5. Differentiation Criteria Rows (${rows.length})</span></div>
+            <p class="sub" style="margin-bottom:8px">Tip: Prefix any value with <code>[+]</code> (green pro), <code>[!]</code> (amber trade-off), or <code>[-]</code> (red limitation) for automatic status badges.</p>`;
+          rows.forEach((rw, ri) => {
+            h += `<div class="item-box">
+              <div class="item-box-header"><span class="item-badge">Criterion #${ri + 1}</span>${moveBtns('diff-row', ri, rows.length > 1)}</div>
+              <label>Dimension / Criterion Name</label>
+              <input type="text" data-diff-row-label="${ri}" value="${escAttr(rw.label)}"/>`;
+            topics.forEach((tp, ti) => {
+              const cellVal = (rw.values && rw.values[ti]) || '';
+              h += `<label style="margin-top:6px" data-topic-label="${ti}">${escXml(tp.name || 'Topic #' + (ti + 1))}</label>
+                <input type="text" data-diff-cell="${ri}:${ti}" value="${escAttr(cellVal)}"/>`;
+            });
+            h += `</div>`;
+          });
+          h += `<button type="button" class="add-btn" data-act="add-diff-row">+ Add Differentiation Row</button>`;
+        } else if (m === 'mermaid') {
+          h += `<div class="section-title"><span>2. Live Mermaid Code</span></div>
+            <label>Alt Text / Diagram Title</label>
+            <input type="text" data-field="title" value="${escAttr(state.title)}"/>
+            <label>Mermaid Syntax (flowchart, sequenceDiagram, stateDiagram-v2, erDiagram)</label>
+            <textarea data-field="mermaidCode" style="min-height: 220px; font-family: 'JetBrains Mono', monospace; font-size: 12px">${escXml(state.mermaidCode)}</textarea>
+            <p class="sub">Tip: You can also paste <code>\`\`\`mermaid</code> blocks straight into any blog <code>README.md</code> without exporting an image!</p>`;
+        }
+
+        dynamicControls.innerHTML = h;
+      }
+
+      let currentSvgMarkup = '';
+      let currentSvgDims = { width: 1080, height: 540 };
+
+      async function renderDiagram() {
+        ensureModeFields(state.mode);
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
+
+        if (state.mode === 'mermaid') {
+          try {
+            if (!mermaidModPromise) {
+              mermaidModPromise = import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
+            }
+            const mod = await mermaidModPromise;
+            const mermaid = mod.default;
+            mermaid.initialize({
+              startOnLoad: false,
+              securityLevel: 'strict',
+              fontFamily: 'Inter, system-ui, sans-serif',
+              theme: 'base',
+              themeVariables: {
+                background: '#f8fafc',
+                primaryColor: '#f0fdfa',
+                primaryTextColor: '#0f172a',
+                primaryBorderColor: '#0d9488',
+                lineColor: '#0d9488',
+                secondaryColor: '#e0f2fe',
+                tertiaryColor: '#f1f5f9'
+              }
+            });
+            const { svg } = await mermaid.render('mmd-studio-' + Date.now(), state.mermaidCode || 'flowchart LR\nA-->B');
+            currentSvgMarkup = svg;
+            svgStage.innerHTML = svg;
+            const svgEl = svgStage.querySelector('svg');
+            const vb = svgEl && svgEl.viewBox && svgEl.viewBox.baseVal;
+            currentSvgDims = { width: (vb && vb.width) || 1080, height: (vb && vb.height) || 500 };
+            dimensionsLabel.textContent = `Live Mermaid Vector Preview`;
+          } catch (err) {
+            svgStage.innerHTML = `<div style="padding:18px;color:#b91c1c;font-family:monospace;font-size:12px">Mermaid syntax error (or offline): ${escXml(err.message || err)}</div>`;
+          }
+        } else {
+          const fn = RENDERERS[state.mode] || RENDERERS.pipeline;
+          const res = fn(state);
+          currentSvgMarkup = res.svg;
+          currentSvgDims = { width: res.width, height: res.height };
+          svgStage.innerHTML = res.svg;
+          dimensionsLabel.textContent = `Live Vector Preview · ${res.width} × ${res.height} px`;
+        }
+
+        const cleanName = (state.fileName || 'diagram').replace(/\.(svg|png|json)$/i, '').trim() || 'diagram';
+        markdownPreview.textContent = `![${state.title || 'Architecture Diagram'}](./${cleanName}.svg)`;
+      }
+
+      presetSelect.addEventListener('change', () => {
+        const key = presetSelect.value;
+        if (key && PRESETS[key]) {
+          state = JSON.parse(JSON.stringify(PRESETS[key]));
+          activeCompareSide = 'left';
+          activeColIdx = 0;
+          renderControls();
+          renderDiagram();
+        }
+      });
+
+      modeTabs.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.mode = btn.dataset.mode;
+          renderControls();
+          renderDiagram();
+        });
+      });
+
+      [kickerInput, badgeInput, mainTitleInput, fileNameInput].forEach((el) => {
+        el.addEventListener('input', () => {
+          state.kicker = kickerInput.value;
+          state.badge = badgeInput.value;
+          state.title = mainTitleInput.value;
+          state.fileName = fileNameInput.value;
+          renderDiagram();
+        });
+      });
+
+      dynamicControls.addEventListener('input', (e) => {
+        const t = e.target;
+        if (t.dataset.field) {
+          state[t.dataset.field] = t.value;
+        } else if (t.dataset.actors) {
+          state.actors = t.value.split(',').map((s) => s.trim()).filter(Boolean).slice(0, 5);
+        } else if (t.dataset.root) {
+          state.root[t.dataset.root] = t.value;
+        } else if (t.dataset.arr) {
+          const arr = state[t.dataset.arr];
+          const idx = Number(t.dataset.idx);
+          if (arr && arr[idx]) {
+            let val = t.value;
+            if (t.dataset.key === 'dashed') val = val === 'true';
+            arr[idx][t.dataset.key] = val;
+            if (t.dataset.arr === 'topics' && t.dataset.key === 'name') {
+              dynamicControls.querySelectorAll(`[data-topic-label="${idx}"]`).forEach((lbl) => {
+                lbl.textContent = val || `Topic #${idx + 1}`;
+              });
+            }
+          }
+        } else if (t.dataset.diffRowLabel !== undefined) {
+          const ri = Number(t.dataset.diffRowLabel);
+          if (state.rows && state.rows[ri]) state.rows[ri].label = t.value;
+        } else if (t.dataset.diffCell) {
+          const [ri, ti] = t.dataset.diffCell.split(':').map(Number);
+          if (state.rows && state.rows[ri]) {
+            if (!Array.isArray(state.rows[ri].values)) state.rows[ri].values = [];
+            state.rows[ri].values[ti] = t.value;
+          }
+        } else if (t.dataset.sideField) {
+          state[activeCompareSide][t.dataset.sideField] = t.value;
+        } else if (t.dataset.compArr) {
+          const arr = state[activeCompareSide][t.dataset.compArr];
+          const idx = Number(t.dataset.idx);
+          if (arr && arr[idx]) arr[idx][t.dataset.key] = t.value;
+        }
+        renderDiagram();
+      });
+
+      dynamicControls.addEventListener('click', (e) => {
+        const sideBtn = e.target.closest('[data-side]');
+        if (sideBtn) { activeCompareSide = sideBtn.dataset.side; renderControls(); return; }
+        const colBtn = e.target.closest('[data-col]');
+        if (colBtn) { activeColIdx = Number(colBtn.dataset.col); renderControls(); return; }
+
+        const actBtn = e.target.closest('[data-act]');
+        if (!actBtn) return;
+        const [verb, target] = actBtn.dataset.act.split(/-(.+)/);
+        const idx = Number(actBtn.dataset.idx);
+        const dir = Number(actBtn.dataset.dir);
+
+        const move = (arr) => {
+          const ni = idx + dir;
+          if (ni >= 0 && ni < arr.length) { const tmp = arr[idx]; arr[idx] = arr[ni]; arr[ni] = tmp; }
+        };
+
+        const NEW_ITEMS = {
+          steps: () => ({ badge: `STEP ${state.steps.length + 1}`, title: 'New Step', desc: 'Describe stage action.', code: 'cmd --flag', theme: 'default' }),
+          nodes: () => ({ name: `node-0${state.nodes.length + 1}`, pills: 'Service\nAgent', spec: '2 vCPU · 4 GB', theme: 'sky' }),
+          layers: () => ({ title: 'Shared Infrastructure Layer', sub: 'Details', style: 'slate' }),
+          leftCards: () => ({ title: 'New Source', sub: 'Producer', code: 'SDK' }),
+          rightCards: () => ({ title: 'New Target', sub: 'Sink', code: 'gRPC' }),
+          messages: () => ({ from: 0, to: 1, label: 'New Request', code: 'Payload', dashed: false }),
+          branches: () => ({ title: 'match="rule"', sub: 'Route group', theme: 'sky', leaves: ['Target 1'] }),
+          events: () => ({ time: 'T+15m', badge: 'ACTION', title: 'Next Milestone', desc: 'What changed.', code: 'metric / cmd', theme: 'teal' }),
+          checks: () => ({ condition: 'Next diagnostic question?', yesTitle: 'Root Cause Found', yesDesc: 'Apply remediation.', yesCode: 'command', noLabel: 'Check next' }),
+          zones: () => ({ name: 'New Subnet / Zone', cidr: '10.0.x.0/24', theme: 'teal', items: 'Component A\nComponent B' })
+        };
+
+        if (target === 'comp-node') {
+          if (verb === 'add') state[activeCompareSide].nodes.push({ name: 'Guest VM', top: 'Workload', bottom: 'Linux OS' });
+          if (verb === 'del') state[activeCompareSide].nodes.splice(idx, 1);
+        } else if (target === 'comp-layer') {
+          if (verb === 'add') state[activeCompareSide].layers.push({ title: 'New Layer', sub: 'Details', style: 'slate' });
+          if (verb === 'del') state[activeCompareSide].layers.splice(idx, 1);
+          if (verb === 'move') move(state[activeCompareSide].layers);
+        } else if (target === 'diff-topic') {
+          const themeCycle = ['teal', 'sky', 'violet', 'amber', 'slate'];
+          if (verb === 'add' && state.topics.length < 6) {
+            const n = state.topics.length + 1;
+            state.topics.push({
+              name: `Topic ${n}`,
+              badge: `Option ${n}`,
+              theme: themeCycle[(n - 1) % themeCycle.length],
+              verdict: 'Ideal use case'
+            });
+            state.rows.forEach((r) => {
+              if (!Array.isArray(r.values)) r.values = [];
+              r.values.push('[+] Supported');
+            });
+          } else if (verb === 'del' && state.topics.length > 2) {
+            state.topics.splice(idx, 1);
+            state.rows.forEach((r) => {
+              if (Array.isArray(r.values)) r.values.splice(idx, 1);
+            });
+          } else if (verb === 'move') {
+            const ni = idx + dir;
+            if (ni >= 0 && ni < state.topics.length) {
+              move(state.topics);
+              state.rows.forEach((r) => {
+                if (Array.isArray(r.values)) {
+                  const tmp = r.values[idx];
+                  r.values[idx] = r.values[ni];
+                  r.values[ni] = tmp;
+                }
+              });
+            }
+          }
+        } else if (target === 'diff-row') {
+          if (verb === 'add') {
+            state.rows.push({
+              label: 'New Criterion',
+              values: state.topics.map((_, ti) => `Topic ${ti + 1} behavior`)
+            });
+          } else if (verb === 'del' && state.rows.length > 1) {
+            state.rows.splice(idx, 1);
+          } else if (verb === 'move') {
+            move(state.rows);
+          }
+        } else if (Array.isArray(state[target])) {
+          if (verb === 'add' && NEW_ITEMS[target]) state[target].push(NEW_ITEMS[target]());
+          if (verb === 'del') state[target].splice(idx, 1);
+          if (verb === 'move') move(state[target]);
+        }
+
+        renderControls();
+        renderDiagram();
+      });
+
+      function cleanName() {
+        return (state.fileName || 'diagram').replace(/\.(svg|png|json)$/i, '').trim() || 'diagram';
+      }
+
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        const key = DEFAULT_FOR_MODE[state.mode] || 'pipeline-vagrant';
+        state = JSON.parse(JSON.stringify(PRESETS[key]));
+        renderControls();
+        renderDiagram();
+      });
+
+      document.getElementById('downloadSvgBtn').addEventListener('click', () => {
+        const blob = new Blob([currentSvgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = cleanName() + '.svg';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+
+      document.getElementById('downloadPngBtn').addEventListener('click', () => {
+        const scale = 2;
+        const canvas = document.createElement('canvas');
+        canvas.width = currentSvgDims.width * scale;
+        canvas.height = currentSvgDims.height * scale;
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        const url = URL.createObjectURL(new Blob([currentSvgMarkup], { type: 'image/svg+xml;charset=utf-8' }));
+        img.onload = () => {
+          ctx.fillStyle = '#f8fafc';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          URL.revokeObjectURL(url);
+          const a = document.createElement('a');
+          a.href = canvas.toDataURL('image/png');
+          a.download = cleanName() + '.png';
+          a.click();
+        };
+        img.src = url;
+      });
+
+      const copyMdBtn = document.getElementById('copyMdBtn');
+      copyMdBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(markdownPreview.textContent);
+          copyMdBtn.textContent = 'Copied!';
+          setTimeout(() => (copyMdBtn.textContent = 'Copy Markdown'), 1800);
+        } catch (_) {}
+      });
+
+      document.getElementById('saveJsonBtn').addEventListener('click', () => {
+        const url = URL.createObjectURL(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = cleanName() + '.diagram.json';
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+
+      const jsonFileInput = document.getElementById('jsonFileInput');
+      document.getElementById('loadJsonBtn').addEventListener('click', () => jsonFileInput.click());
+      jsonFileInput.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(String(reader.result));
+            if (parsed && parsed.mode) { state = parsed; renderControls(); renderDiagram(); }
+          } catch (_) { alert('Invalid diagram JSON file.'); }
+        };
+        reader.readAsText(file);
+        jsonFileInput.value = '';
+      });
+
+      renderControls();
+      renderDiagram();
+    </script>
+  </body>
+</html>

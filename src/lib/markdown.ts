@@ -228,6 +228,10 @@ export async function renderPostMarkdown(
 
       code({ text, lang }) {
         const rawLang = (lang || '').trim().split(/\s+/)[0].toLowerCase();
+        if (rawLang === 'mermaid') {
+          return `<figure class="mermaid-wrapper my-8 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/70 dark:bg-slate-900/80 p-4 sm:p-6 overflow-x-auto"><div class="mermaid-canvas" data-mermaid="${escapeHtml(text)}"><div class="font-mono text-xs text-slate-400 py-4 text-center">Rendering diagram&hellip;</div></div></figure>\n`;
+        }
+
         const displayLang =
           LANG_DISPLAY_NAMES[rawLang] ||
           (rawLang ? rawLang.charAt(0).toUpperCase() + rawLang.slice(1) : 'Code');

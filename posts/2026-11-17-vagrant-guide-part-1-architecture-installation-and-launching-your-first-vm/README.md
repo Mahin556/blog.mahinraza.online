@@ -1,5 +1,5 @@
 ---
-title: "Vagrant Guide Part 1: Architecture, Installation, and Launching Your First VM"
+title: "Vagrant Guide: Architecture, Installation, and Launching Your First VM"
 description: "Learn how HashiCorp Vagrant automates reproducible virtual machine environments as code—covering Vagrantfile architecture, boxes, providers, cross-platform installation, and provisioning your first Ubuntu VM."
 date: 2026-11-17
 category: "Platform & Systems Engineering"

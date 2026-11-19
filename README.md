@@ -13,7 +13,7 @@ Personal engineering blog covering **AWS, Kubernetes, Observability, OpenTelemet
    - [Format C: Existing / Inline-Header Posts](#format-c-existing--inline-header-posts)
 3. [Complete Frontmatter & Metadata Reference](#3-complete-frontmatter--metadata-reference)
 4. [Writing Content: Markdown Features](#4-writing-content-markdown-features)
-5. [Creating `social-media.png` Cover Images (3 Ways)](#5-creating-social-mediapng-cover-images-3-ways)
+5. [Creating `social-media.png` Cover Images & Architecture Diagrams](#5-creating-social-mediapng-cover-images--architecture-diagrams)
 6. [Categories & Automatic Tag Routing](#6-categories--automatic-tag-routing)
 7. [Site Customization (Profile, Comments, Theme)](#7-site-customization-profile-comments-theme)
 8. [Project Structure](#8-project-structure)
@@ -177,10 +177,47 @@ git push
 - **Callouts / Blockquotes:** Prefix lines with `> ` to render a highlighted teal callout box.
 - **Tables:** Standard GitHub-Flavored Markdown (`| Col A | Col B |`) renders responsive bordered tables.
 - **Images:** Clicking any image inside an article opens a full-screen zoom lightbox (`ESC` to close).
+- **Architecture & Workflow Diagrams (2 Self-Serve Options):**
+  1. **No-Code Visual Diagram Studio ([`tools/diagram-generator.html`](./tools/diagram-generator.html)):** Double-click in Chrome/Edge, pick from **12 diagram layouts** (*Step Pipeline*, *Multi-Topic Differential (2–6 Topics)*, *2-Way Architecture Compare*, *3-Way Stack Matrix*, *Cluster Stack*, *3-Column Hub Flow*, *Sequence Call Flow*, *Routing Tree*, *Incident Timeline*, *Decision Runbook*, *Cloud VPC / Trust Zones*, or *Live Mermaid Converter*) and **25 categorized templates**, edit labels in plain English, and click **Download `.svg`** (or **2x `.png`**) + **Copy Markdown**.
+  2. **Native `mermaid` Code Blocks:** Write ```` ```mermaid ```` blocks directly inside any Markdown post — they render automatically in the blog's Teal/Slate theme and switch dynamically between Light and Dark mode!
 
 ---
 
-## 5. Creating `social-media.png` Cover Images (3 Ways)
+## 5. Creating `social-media.png` Cover Images & Architecture Diagrams
+
+### Part A: Architecture & Workflow Diagrams (No AI or Design Tool Needed)
+
+1. **Option 1 — Standalone Browser Diagram Builder (Recommended for Polished Vector Cards):**
+   - Double-click [`tools/diagram-generator.html`](./tools/diagram-generator.html) in any browser (works locally, zero installs).
+   - Pick from **25 starter templates** grouped across **Multi-Topic Differentials (`2`, `3`, `4+` Topics)** plus your 6 blog tracks (*Virtualization & Linux*, *Kubernetes & Containers*, *Cloud & Storage*, *Observability & Tracing*, *SRE & Incident Response*, *Security & Networking*) or switch between **12 layout engines**:
+     1. **Step Pipeline** (`1 → 2 → 3` multi-row workflows)
+     2. **Multi-Topic Differential (`2–6` Topics)** — Differentiate `2`, `3`, `4`, `5`, or `6` topics side-by-side in either **Row-Aligned Matrix Table** or **Side-by-Side Topic Cards** mode, with `[+]`/`[!]`/`[-]` pro/trade-off/limitation badges and per-topic *"Best For"* verdicts (e.g., *NAT vs. Forwarded Port vs. Private vs. Public Bridge*, *Deployment vs. StatefulSet*, *ClusterIP vs. NodePort vs. LoadBalancer*).
+     3. **2-Way Architecture Comparison (`A vs. B`)** (side-by-side stacked layer cards)
+     4. **3-Way Stack Matrix (`A vs. B vs. C`)** (e.g., *Bare Metal vs. VMs vs. Containers*, *EBS vs. EFS vs. S3*)
+     5. **Cluster / Node Stack** (top nodes + shared network/hypervisor/hardware layers)
+     6. **3-Column Hub Flow** (`Sources → Gateway/Collector → Backends`)
+     7. **Sequence Call Flow** (multi-actor request/response lifelines for OAuth, DNS, TLS, Tracing)
+     8. **Routing / Hierarchy Tree** (root → branches → leaf targets, e.g., Alertmanager)
+     9. **Incident Timeline** (timestamped T+0m → T+22m SRE runbooks & postmortems)
+     10. **Decision Runbook** (`Check? → YES Fix / NO Next Check` troubleshooting flowcharts)
+     11. **Cloud VPC / Trust Zones** (nested perimeter + public/private/isolated subnets)
+     12. **Live Mermaid Converter** (type Mermaid syntax and export `.svg` / `2x .png`)
+   - Click **Download `.svg`** into `posts/YYYY-MM-DD-your-slug/`, then click **Copy Markdown** (`![Title](./your-diagram.svg)`) and paste into `README.md`.
+   - Use **Save `.json`** / **Load `.json`** anytime to save editable diagram source files.
+
+2. **Option 2 — Inline `mermaid` Diagrams Directly Inside Markdown (Fastest):**
+   - Works even in single-file posts (`posts/YYYY-MM-DD-slug.md`) with zero image files:
+   ````markdown
+   ```mermaid
+   flowchart LR
+     A[Vagrantfile] -->|vagrant up| B[VirtualBox Provider]
+     B --> C[Ubuntu 24.04 Guest VM]
+   ```
+   ````
+
+---
+
+### Part B: `social-media.png` Cover Cards (3 Ways)
 
 Custom `social-media.png` images are **optional** — any post without one automatically uses [`public/og-default.png`](./public/og-default.png). When you want a custom card for a folder post, choose any of these 3 methods:
 
@@ -261,6 +298,7 @@ Every post belongs to **one category**. If you omit `category:` in frontmatter, 
 │   ├── scripts/                   # validate-blogs, sync-post-assets, generate-social-image, update-post
 │   └── styles/global.css          # Typography, code block headers, TOC rail, lightbox styles
 ├── tools/
+│   ├── diagram-generator.html     # Standalone offline visual studio for SVG/PNG architecture diagrams
 │   └── social-card-generator.html # Standalone offline browser tool to build social-media.png cards
 ├── Authors.json                   # Author metadata registry
 ├── social-media-image-template.png# Blank 1280x720 card frame

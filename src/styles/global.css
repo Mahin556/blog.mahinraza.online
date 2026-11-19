@@ -541,6 +541,24 @@ html.dark .toc-nav a.toc-h3 {
   background: rgba(255, 255, 255, 0.25);
 }
 
+/* Native Mermaid diagram blocks */
+.mermaid-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mermaid-canvas {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.mermaid-canvas svg {
+  max-width: 100% !important;
+  height: auto !important;
+}
+
 @media print {
   .reading-progress,
   .floating-toc-aside,

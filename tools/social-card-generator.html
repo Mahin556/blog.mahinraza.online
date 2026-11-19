@@ -176,9 +176,78 @@
         border-radius: 4px;
         color: #0f766e;
       }
+      .top-nav {
+        max-width: 1120px;
+        margin: 0 auto 20px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 10px 16px;
+        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+      }
+      .brand-pill {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        font-weight: 600;
+        color: #0f766e;
+      }
+      .brand-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        background: #0f172a;
+        color: #2dd4bf;
+        font-weight: 700;
+        font-size: 12px;
+      }
+      .tool-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tool-link {
+        text-decoration: none;
+        font-size: 12.5px;
+        font-weight: 600;
+        padding: 7px 12px;
+        border-radius: 8px;
+        color: #475569;
+        border: 1px solid transparent;
+        transition: all 0.15s;
+      }
+      .tool-link:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+      }
+      .tool-link.active {
+        background: #f0fdfa;
+        color: #0f766e;
+        border-color: #99f6e4;
+      }
     </style>
   </head>
   <body>
+    <nav class="top-nav">
+      <div class="brand-pill">
+        <span class="brand-icon">&gt;_</span>
+        <span>blog.mahinraza.online // visual-studio</span>
+      </div>
+      <div class="tool-links">
+        <a class="tool-link active" href="./social-card-generator.html">1. Social Cover Card (1280&times;720)</a>
+        <a class="tool-link" href="./diagram-generator.html">2. Architecture &amp; Workflow Diagrams (SVG / PNG)</a>
+      </div>
+    </nav>
     <div class="container">
       <!-- Controls -->
       <div class="panel">

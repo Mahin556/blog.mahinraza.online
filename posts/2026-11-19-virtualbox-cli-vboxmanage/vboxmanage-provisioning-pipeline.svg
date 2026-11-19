@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="530" viewBox="0 0 1080 530" role="img" aria-labelledby="title-vbox-pipe desc-vbox-pipe">
+  <title id="title-vbox-pipe">VBoxManage End-to-End VM Provisioning Pipeline</title>
+  <desc id="desc-vbox-pipe">Six-stage workflow showing how VBoxManage builds a virtual machine from scratch: registering the VM definition, configuring CPU/RAM/NIC hardware, creating a VDI virtual disk, attaching an Intel AHCI SATA controller with disk and ISO media, exposing SSH via NAT port forwarding, and booting headless or GUI before ejecting the installer.</desc>
+
+  <defs>
+    <style>
+      .font-sans { font-family: Inter, 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    </style>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#0d9488" />
+    </marker>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect x="0" y="0" width="1080" height="530" rx="16" fill="#f8fafc" />
+  <rect x="1" y="1" width="1078" height="528" rx="15" fill="none" stroke="#e2e8f0" stroke-width="2" />
+
+  <!-- Top Header -->
+  <text x="40" y="42" class="font-mono" font-size="12" font-weight="600" fill="#0f766e" letter-spacing="0.08em">// PROVISIONING PIPELINE</text>
+  <text x="40" y="70" class="font-sans" font-size="22" font-weight="700" fill="#0f172a">Building a Virtual Machine from Scratch with VBoxManage</text>
+
+  <!-- Command Badge Top-Right -->
+  <rect x="846" y="38" width="194" height="34" rx="8" fill="#0f172a" />
+  <text x="943" y="60" text-anchor="middle" class="font-mono" font-size="13" font-weight="700" fill="#5eead4">$ VBoxManage</text>
+
+  <!-- ========================================================= -->
+  <!-- ROW 1: Steps 01 -> 02 -> 03                               -->
+  <!-- ========================================================= -->
+
+  <!-- STEP 01 -->
+  <rect x="40" y="102" width="308" height="164" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.75" />
+  <rect x="40" y="102" width="308" height="42" rx="12" fill="#f0fdfa" />
+  <rect x="40" y="132" width="308" height="12" fill="#f0fdfa" />
+  <line x1="40" y1="144" x2="348" y2="144" stroke="#99f6e4" stroke-width="1.25" />
+  <rect x="56" y="112" width="54" height="22" rx="6" fill="#0f766e" />
+  <text x="83" y="127" text-anchor="middle" class="font-mono" font-size="11" font-weight="700" fill="#ffffff">STEP 1</text>
+  <text x="122" y="128" class="font-sans" font-size="14" font-weight="700" fill="#0f172a">Create &amp; Register VM</text>
+
+  <text x="58" y="170" class="font-sans" font-size="12.5" fill="#334155">Generates the XML .vbox machine</text>
+  <text x="58" y="190" class="font-sans" font-size="12.5" fill="#334155">definition, assigns a UUID, and</text>
+  <text x="58" y="210" class="font-sans" font-size="12.5" fill="#334155">registers it in VirtualBox inventory.</text>
+  <rect x="58" y="226" width="272" height="26" rx="5" fill="#f1f5f9" />
+  <text x="194" y="243" text-anchor="middle" class="font-mono" font-size="10.5" fill="#0f766e">createvm --ostype Ubuntu_64 --register</text>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="348" y1="184" x2="380" y2="184" stroke="#0d9488" stroke-width="2.25" marker-end="url(#arrow-teal)" />
+
+  <!-- STEP 02 -->
+  <rect x="386" y="102" width="308" height="164" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.75" />
+  <rect x="386" y="102" width="308" height="42" rx="12" fill="#f0fdfa" />
+  <rect x="386" y="132" width="308" height="12" fill="#f0fdfa" />
+  <line x1="386" y1="144" x2="694" y2="144" stroke="#99f6e4" stroke-width="1.25" />
+  <rect x="402" y="112" width="54" height="22" rx="6" fill="#0f766e" />
+  <text x="429" y="127" text-anchor="middle" class="font-mono" font-size="11" font-weight="700" fill="#ffffff">STEP 2</text>
+  <text x="468" y="128" class="font-sans" font-size="14" font-weight="700" fill="#0f172a">Configure Hardware</text>
+
+  <text x="404" y="170" class="font-sans" font-size="12.5" fill="#334155">Allocates RAM, vCPUs, I/O APIC,</text>
+  <text x="404" y="190" class="font-sans" font-size="12.5" fill="#334155">VMSVGA display, boot priority,</text>
+  <text x="404" y="210" class="font-sans" font-size="12.5" fill="#334155">and paravirtualized virtio NIC.</text>
+  <rect x="404" y="226" width="272" height="26" rx="5" fill="#f1f5f9" />
+  <text x="540" y="243" text-anchor="middle" class="font-mono" font-size="10.5" fill="#0f766e">modifyvm --memory 4096 --cpus 2</text>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="694" y1="184" x2="726" y2="184" stroke="#0d9488" stroke-width="2.25" marker-end="url(#arrow-teal)" />
+
+  <!-- STEP 03 -->
+  <rect x="732" y="102" width="308" height="164" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.75" />
+  <rect x="732" y="102" width="308" height="42" rx="12" fill="#f0fdfa" />
+  <rect x="732" y="132" width="308" height="12" fill="#f0fdfa" />
+  <line x1="732" y1="144" x2="1040" y2="144" stroke="#99f6e4" stroke-width="1.25" />
+  <rect x="748" y="112" width="54" height="22" rx="6" fill="#0f766e" />
+  <text x="775" y="127" text-anchor="middle" class="font-mono" font-size="11" font-weight="700" fill="#ffffff">STEP 3</text>
+  <text x="814" y="128" class="font-sans" font-size="14" font-weight="700" fill="#0f172a">Allocate Virtual Disk</text>
+
+  <text x="750" y="170" class="font-sans" font-size="12.5" fill="#334155">Creates a dynamically expanding</text>
+  <text x="750" y="190" class="font-sans" font-size="12.5" fill="#334155">(thin-provisioned) or fixed-size</text>
+  <text x="750" y="210" class="font-sans" font-size="12.5" fill="#334155">40 GB VDI block storage image.</text>
+  <rect x="750" y="226" width="272" height="26" rx="5" fill="#f1f5f9" />
+  <text x="886" y="243" text-anchor="middle" class="font-mono" font-size="10.5" fill="#0f766e">createmedium disk --size 40960</text>
+
+  <!-- Connector Path: Step 3 -> Step 4 -->
+  <path d="M 886 266 L 886 292 L 194 292 L 194 314" fill="none" stroke="#0d9488" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arrow-teal)" />
+
+  <!-- ========================================================= -->
+  <!-- ROW 2: Steps 04 -> 05 -> 06                               -->
+  <!-- ========================================================= -->
+
+  <!-- STEP 04 -->
+  <rect x="40" y="320" width="308" height="168" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.75" />
+  <rect x="40" y="320" width="308" height="42" rx="12" fill="#f0fdfa" />
+  <rect x="40" y="350" width="308" height="12" fill="#f0fdfa" />
+  <line x1="40" y1="362" x2="348" y2="362" stroke="#99f6e4" stroke-width="1.25" />
+  <rect x="56" y="330" width="54" height="22" rx="6" fill="#0f766e" />
+  <text x="83" y="345" text-anchor="middle" class="font-mono" font-size="11" font-weight="700" fill="#ffffff">STEP 4</text>
+  <text x="122" y="346" class="font-sans" font-size="14" font-weight="700" fill="#0f172a">Wire SATA &amp; Media</text>
+
+  <text x="58" y="388" class="font-sans" font-size="12.5" fill="#334155">Adds an IntelAhci SATA bus and</text>
+  <text x="58" y="408" class="font-sans" font-size="12.5" fill="#334155">mounts the .vdi disk on Port 0</text>
+  <text x="58" y="428" class="font-sans" font-size="12.5" fill="#334155">plus installer .iso on Port 1.</text>
+  <rect x="58" y="446" width="272" height="26" rx="5" fill="#f1f5f9" />
+  <text x="194" y="463" text-anchor="middle" class="font-mono" font-size="10.5" fill="#0f766e">storagectl + storageattach</text>
+
+  <!-- Arrow 4 -> 5 -->
+  <line x1="348" y1="404" x2="380" y2="404" stroke="#0d9488" stroke-width="2.25" marker-end="url(#arrow-teal)" />
+
+  <!-- STEP 05 -->
+  <rect x="386" y="320" width="308" height="168" rx="12" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.75" />
+  <rect x="386" y="320" width="308" height="42" rx="12" fill="#f0fdfa" />
+  <rect x="386" y="350" width="308" height="12" fill="#f0fdfa" />
+  <line x1="386" y1="362" x2="694" y2="362" stroke="#99f6e4" stroke-width="1.25" />
+  <rect x="402" y="330" width="54" height="22" rx="6" fill="#0f766e" />
+  <text x="429" y="345" text-anchor="middle" class="font-mono" font-size="11" font-weight="700" fill="#ffffff">STEP 5</text>
+  <text x="468" y="346" class="font-sans" font-size="14" font-weight="700" fill="#0f172a">Forward SSH via NAT</text>
+
+  <text x="404" y="388" class="font-sans" font-size="12.5" fill="#334155">Binds host loopback 127.0.0.1:2222</text>
+  <text x="404" y="408" class="font-sans" font-size="12.5" fill="#334155">to guest TCP port 22 without</text>
+  <text x="404" y="428" class="font-sans" font-size="12.5" fill="#334155">exposing the VM to your LAN.</text>
+  <rect x="404" y="446" width="272" height="26" rx="5" fill="#f1f5f9" />
+  <text x="540" y="463" text-anchor="middle" class="font-mono" font-size="10.5" fill="#0f766e">--natpf1 "ssh,tcp,127.0.0.1,2222,,22"</text>
+
+  <!-- Arrow 5 -> 6 -->
+  <line x1="694" y1="404" x2="726" y2="404" stroke="#0d9488" stroke-width="2.25" marker-end="url(#arrow-teal)" />
+
+  <!-- STEP 06 (Highlighted Final Ready State) -->
+  <rect x="732" y="320" width="308" height="168" rx="12" fill="#ffffff" stroke="#0d9488" stroke-width="2.25" />
+  <rect x="732" y="320" width="308" height="42" rx="12" fill="#ccfbf1" />
+  <rect x="732" y="350" width="308" height="12" fill="#ccfbf1" />
+  <line x1="732" y1="362" x2="1040" y2="362" stroke="#5eead4" stroke-width="1.5" />
+  <rect x="748" y="330" width="54" height="22" rx="6" fill="#115e59" />
+  <text x="775" y="345" text-anchor="middle" class="font-mono" font-size="11" font-weight="700" fill="#ffffff">STEP 6</text>
+  <text x="814" y="346" class="font-sans" font-size="14" font-weight="700" fill="#0f766e">Boot &amp; Run Headless</text>
+
+  <text x="750" y="388" class="font-sans" font-size="12.5" fill="#334155">Install OS in GUI or unattended,</text>
+  <text x="750" y="408" class="font-sans" font-size="12.5" fill="#334155">eject ISO (--medium emptydrive),</text>
+  <text x="750" y="428" class="font-sans" font-size="12.5" font-weight="600" fill="#0f766e">and run headless over SSH!</text>
+  <rect x="750" y="446" width="272" height="26" rx="5" fill="#0f172a" />
+  <text x="886" y="463" text-anchor="middle" class="font-mono" font-size="11" font-weight="600" fill="#5eead4">$ ssh -p 2222 user@127.0.0.1</text>
+</svg>
