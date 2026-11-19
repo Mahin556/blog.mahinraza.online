@@ -108,25 +108,26 @@ const breadcrumbSchema =
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" id="meta-theme-color" content="#0f766e" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" id="meta-theme-color" content="#0b1120" />
 
-    <!-- Prevent flash of wrong theme before first paint (defaults to light) -->
+    <!-- Prevent flash of wrong theme before first paint (defaults to dark) -->
     <script is:inline>
       (function () {
+        let saved = null;
         try {
-          const saved = localStorage.getItem('theme-preference');
-          const theme = saved === 'light' || saved === 'dark' ? saved : 'light';
-          const isDark = theme === 'dark';
-          document.documentElement.classList.toggle('dark', isDark);
-          document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
-          const meta = document.getElementById('meta-theme-color');
-          if (meta) meta.setAttribute('content', isDark ? '#0b1120' : '#0f766e');
+          saved = localStorage.getItem('theme-preference');
         } catch (_) {}
+        const theme = saved === 'light' || saved === 'dark' ? saved : 'dark';
+        const isDark = theme === 'dark';
+        document.documentElement.classList.toggle('dark', isDark);
+        document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+        const meta = document.getElementById('meta-theme-color');
+        if (meta) meta.setAttribute('content', isDark ? '#0b1120' : '#0f766e');
       })();
     </script>
 

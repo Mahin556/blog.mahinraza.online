@@ -269,7 +269,7 @@ Every post belongs to **one category**. If you omit `category:` in frontmatter, 
 
 - **Site Title, Domain, Bio, Portfolio & GitHub URLs:** Edit [`src/lib/site.ts`](./src/lib/site.ts) (`SITE_CONFIG`).
 - **Author Profiles:** Edit [`Authors.json`](./Authors.json).
-- **Light / Dark Theme:** Defaults to **Light Mode** (`#f8fafc` / `#ffffff`) with a persistent Sun/Moon toggle in [`src/components/Header.astro`](./src/components/Header.astro) (`localStorage` key `'theme-preference'`) and zero-FOUC initialization in [`src/layouts/BaseLayout.astro`](./src/layouts/BaseLayout.astro).
+- **Dark / Light Theme:** Defaults to **Dark Mode** (`#0b1120`) with a persistent Sun/Moon toggle in [`src/components/Header.astro`](./src/components/Header.astro) (`localStorage` key `'theme-preference'`) and zero-FOUC initialization in [`src/layouts/BaseLayout.astro`](./src/layouts/BaseLayout.astro).
 - **Blog Comments (Giscus / GitHub Discussions):** Configured in [`src/lib/site.ts`](./src/lib/site.ts) (`SITE_CONFIG.comments`) and [`src/components/Comments.astro`](./src/components/Comments.astro). Enable **Discussions** on `Mahin556/blog.mahinraza.online`, install the [giscus GitHub App](https://github.com/apps/giscus), grab your IDs from [giscus.app](https://giscus.app), and set `PUBLIC_GISCUS_REPO_ID` + `PUBLIC_GISCUS_CATEGORY_ID` in `.env` / Cloudflare Pages environment variables (or directly in `src/lib/site.ts`).
 - **Theme Colors & Card/Tag Accents:** Edit [`src/lib/colors.ts`](./src/lib/colors.ts) and [`src/styles/global.css`](./src/styles/global.css).
 - **Favicon:** Edit [`public/favicon.svg`](./public/favicon.svg).
