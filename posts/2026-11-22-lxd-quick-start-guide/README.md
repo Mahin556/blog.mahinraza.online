@@ -1,6 +1,6 @@
 ---
 title: "LXD Quick Start Guide: Launch Your First Linux System Container in 60 Seconds"
-description: "Get up and running with LXD and the lxc CLI on Ubuntu—install LXD via Snap, initialize storage and networking, launch an Ubuntu 24.04 container, and learn essential lifecycle commands."
+description: "Get up and running with LXD and the lxc CLI on Ubuntu—install LXD via Snap, initialize storage and networking, launch an Ubuntu 24.04 container, and learn essential commands."
 date: 2026-11-22
 category: "Platform & Systems Engineering"
 tags:
@@ -13,11 +13,11 @@ tags:
 draft: false
 ---
 
-**LXD** manages full Linux **system containers** (complete OS userland, `systemd`, and persistent storage sharing your host kernel) through the **`lxc` command-line client**. If you are on Ubuntu (`22.04` or `24.04 LTS`), you can go from a fresh host to a running, networked container in under a minute.
+**LXD** manages full Linux **system containers** (complete OS, `systemd`, and persistent storage sharing your host kernel) through the **`lxc` command-line client**. If you are on Ubuntu (`22.04` or `24.04 LTS`), you can go from a fresh host to a running, networked container in under a minute.
 
 ---
 
-## 1. From Zero to a Running Container in 5 Steps
+## Running LXD on Ubuntu
 
 ### Step 1: Install LXD & Grant Socket Access
 
@@ -25,8 +25,11 @@ Install the LXD LTS Snap, wait for the socket-activated daemon, and add your use
 
 ```bash
 sudo snap install lxd --channel=5.21/stable
+
 sudo lxd waitready --timeout=60
+
 sudo usermod -aG lxd "$USER"
+
 newgrp lxd
 ```
 
@@ -74,13 +77,21 @@ curl -I "http://$(lxc list web-01 -c 4 --format csv | cut -d' ' -f1)"
 
 ---
 
-## 2. Discovering CLI Help & Other Distro Images
+## Other useful `lxc` commands
 
-Explore built-in `lxc` subcommand flags without leaving the terminal:
+Getting the lxd version:
 
 ```bash
 lxc version
+```
+
+Explore built-in `lxc` subcommands, flags without leaving the terminal:
+
+```bash
 lxc --help
+lxc <command> --help
+lxc <command> <subcommand>.. --help
+
 lxc launch --help
 lxc config device --help
 ```
@@ -93,39 +104,24 @@ lxc image list images: debian/12 amd64
 lxc image list images: alpine/3.20
 ```
 
----
-
-## 3. Essential Day-1 Lifecycle Operations
-
+Copy files between host and container
 ```bash
-# Copy files between host and container
 lxc file push ./nginx.conf web-01/etc/nginx/nginx.conf
 lxc file pull web-01/var/log/nginx/access.log ./access.log
+```
 
-# Take and restore an instant point-in-time snapshot
+Take and restore an instant point-in-time snapshot
+```bash
 lxc snapshot web-01 clean-nginx
 lxc restore web-01 clean-nginx
+```
 
-# Stop, restart, or delete a container
+Stop, restart, or delete a container
+```bash
 lxc restart web-01
 lxc stop web-01
 lxc delete web-01          # Or: lxc delete --force web-01 (stops + deletes)
 ```
-
----
-
-## Quick Command Cheat Sheet
-
-| Task | Command |
-| :--- | :--- |
-| Check client & daemon version | `lxc version` |
-| Initialize LXD (auto / interactive) | `lxd init --auto` · `lxd init` |
-| Launch a container | `lxc launch ubuntu:24.04 <name>` |
-| List instances & IPs | `lxc list` |
-| Execute command / interactive shell | `lxc exec <name> -- <cmd>` · `lxc exec <name> -- bash` |
-| Push / pull files | `lxc file push <src> <name>/<path>` · `lxc file pull <name>/<path> <dst>` |
-| Snapshot / restore | `lxc snapshot <name> <snap>` · `lxc restore <name> <snap>` |
-| Stop & remove container | `lxc delete --force <name>` |
 
 ---
 
