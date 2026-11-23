@@ -1,7 +1,7 @@
 ---
 title: "LXC and LXD Tutorial Series: Complete Guide to Linux System Containers"
 description: "An end-to-end practical tutorial and learning roadmap for LXC and LXD—covering installation, storage pools, lxdbr0 networking, profiles, nested Docker/Kubernetes, backups, and multi-node clustering."
-date: 2026-11-21
+date: 2026-11-23
 category: "Platform & Systems Engineering"
 tags:
   - LXD
