@@ -1,7 +1,7 @@
 ---
 title: "Building a Multi-Node Kubernetes Cluster Using LXC/LXD Containers"
 description: "Step-by-step guide to provisioning a 3-node Kubernetes v1.36 cluster inside Ubuntu 24.04 LXD system containers using kubeadm, containerd, Calico CNI, and Vagrant automation."
-date: 2026-11-25
+date: 2026-11-24
 category: "Kubernetes & Containers"
 tags:
   - Kubernetes
