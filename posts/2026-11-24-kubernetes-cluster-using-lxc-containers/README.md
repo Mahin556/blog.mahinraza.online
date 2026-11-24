@@ -216,7 +216,7 @@ sudo lxc profile list
 
 if [[ -f /vagrant/lxc.sh ]]; then
     echo "Running LXD provisioning..."
-    bash -x /vagrant/lxc.sh provision < /dev/null
+    bash /vagrant/lxc.sh provision < /dev/null
     echo
     echo "========== Kubernetes Cluster Nodes =========="
     sudo -u "$MY_USER" kubectl get nodes || true
