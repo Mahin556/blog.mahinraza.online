@@ -1,0 +1,37 @@
+config:
+  images.auto_update_interval: "6"
+
+networks:
+  - name: lxdbr0
+    type: bridge
+    description: "Default managed bridge network with NAT"
+    config:
+      ipv4.address: 10.240.10.1/24
+      ipv4.nat: "true"
+      ipv6.address: "none"
+
+storage_pools:
+  - name: default
+    driver: dir
+    description: "Default directory-based storage pool"
+    config: {}
+
+profiles:
+  - name: default
+    description: "Default container profile with network and resource limits"
+    config:
+      limits.memory: 2GiB
+    devices:
+      eth0:
+        type: nic
+        name: eth0
+        network: lxdbr0
+
+      root:
+        type: disk
+        path: /
+        pool: default
+
+projects: []
+
+cluster: null
