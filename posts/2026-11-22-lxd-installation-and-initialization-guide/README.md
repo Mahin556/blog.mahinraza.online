@@ -108,6 +108,7 @@ On Ubuntu Server, `snapd` is pre-installed (and sometimes `lxd` is already pre-s
 # Install snapd if missing (required on minimal Debian 12 / Ubuntu installs)
 which snap >/dev/null 2>&1 || {
   sudo apt update && sudo apt install -y snapd
+  sudo systemctl start snapd
   sudo snap install core
 }
 

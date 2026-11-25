@@ -54,6 +54,7 @@ lxc image list ubuntu: 24.04 amd64
 lxc image list images: debian/12 amd64
 lxc image list images: rockylinux/9
 lxc image list images: alpine/3.20
+lxc image list images: ubuntu/24.04 amd64
 
 # View size, architecture, and aliases for a specific image
 lxc image info ubuntu:24.04
